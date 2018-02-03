@@ -1,0 +1,13 @@
+{
+    "window.zoomLevel": 0,
+    "editor.fontSize": 16,
+    "workbench.colorTheme": "Solarized Light",
+    "editor.fontFamily": "Monaco",
+    "editor.fontWeight": "900",
+    "editor.autoClosingBrackets": false,
+    "vim.useCtrlKeys":false,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay":5000,
+    "editor.wordWrap": "on",
+    "editor.minimap.enabled": false
+}
