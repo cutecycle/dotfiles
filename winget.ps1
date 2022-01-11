@@ -14,7 +14,11 @@ $pkgs = @(
 	"DCSS.DungeonCrawlStoneSoup"
 	"Docker.DockerDesktop"
 	"RedHat.Podman"
-	"Kubernetes.minikube"
+	"Kubernetes.minikube",
+	"Parsec.Parsec"
+	"EpicGames.EpicGamesLauncher"
+	"GOG.Galaxy",
+	"Playnite.Playnite"
 
 
 
