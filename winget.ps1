@@ -19,6 +19,7 @@ $pkgs = @(
 	"EpicGames.EpicGamesLauncher"
 	"GOG.Galaxy",
 	"Playnite.Playnite"
+	"GitHub.cli"
 
 
 
