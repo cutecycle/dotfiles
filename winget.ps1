@@ -20,6 +20,7 @@ $pkgs = @(
 	"GOG.Galaxy",
 	"Playnite.Playnite"
 	"GitHub.cli"
+	"Microsoft.dotnet"
 
 
 
