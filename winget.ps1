@@ -38,13 +38,16 @@ $pkgs = @(
 
 )
 
-$pkgs | foreach-object {
+$jobs = $pkgs | foreach-object {
  	Start-Job -ScriptBlock { 
 	param(
 	$name
 	)
 		 winget install -h $name
 	 } -ArgumentList $_
+}
+while($true) { 
+	Receive-Job $jobs -Wait
 }
 
 
