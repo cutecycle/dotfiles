@@ -32,6 +32,7 @@ $pkgs = @(
 	"BlenderFoundation.Blender"
 	"Discord.Discord"
 	"Mozilla.Thunderbird"
+	"ObsProject.OBSStudio"
 
 
 
