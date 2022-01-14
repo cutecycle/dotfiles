@@ -21,6 +21,17 @@ $pkgs = @(
 	"Playnite.Playnite"
 	"GitHub.cli"
 	"Microsoft.dotnet"
+	"WinDirStat.WinDirStat"
+	"LLVM.LLVM"
+	"JFrog.Conan"
+	"CppCheck.CppCheck"
+	"Valve.Steam"
+	"7zip.7zip"
+	"Inkscape.Inkscape"
+	"qBittorrent.qBittorrent"
+	"BlenderFoundation.Blender"
+	"Discord.Discord"
+	"Mozilla.Thunderbird"
 
 
 
