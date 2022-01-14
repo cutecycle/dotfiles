@@ -33,6 +33,7 @@ $pkgs = @(
 	"Discord.Discord"
 	"Mozilla.Thunderbird"
 	"ObsProject.OBSStudio"
+	"GnuWin32.Wget"
 
 
 
