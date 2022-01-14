@@ -28,9 +28,12 @@ $pkgs = @(
 )
 
 $pkgs | foreach-object {
- 	# Start-Job -ScriptBlock { 
-		 winget install -h $_
-	#  } -ArgumentList $_
+ 	Start-Job -ScriptBlock { 
+	param(
+	$name
+	)
+		 winget install -h $name
+	 } -ArgumentList $_
 }
 
 
