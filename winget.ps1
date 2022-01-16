@@ -34,6 +34,8 @@ $pkgs = @(
 	"Mozilla.Thunderbird"
 	"ObsProject.OBSStudio"
 	"GnuWin32.Wget"
+	"MITMediaLab.Scratch.3"
+	"VideoLAN.VLC"
 
 
 
