@@ -1,7 +1,6 @@
 $pkgs = @(
 	"Microsoft.dotnet",
 	"Google.Chrome",
-	"vim.vim",
 	
 	"Microsoft.VisualStudio.2022.Enterprise",
 	"Corsair.iCUE",
@@ -54,5 +53,6 @@ while($true) {
 	Receive-Job $jobs -Wait
 }
 winget install "Microsoft.VisualStudioCode" -i 
+winget install "vim.vim" -i 
 
 install-Module Az -Force -scope CurrentUser
