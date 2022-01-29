@@ -36,6 +36,7 @@ $pkgs = @(
 	"BlenderFoundation.Blender"
 	"Discord.Discord"
 	"Mozilla.Thunderbird"
+	"Kiwix.KiwixJS"
 	"ObsProject.OBSStudio"
 	"GnuWin32.Wget"
 	"MITMediaLab.Scratch.3"
