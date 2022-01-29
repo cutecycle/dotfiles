@@ -2,7 +2,7 @@ $pkgs = @(
 	"Microsoft.dotnet",
 	"Google.Chrome",
 	"vim.vim",
-	"Microsoft.VisualStudioCode",
+	
 	"Microsoft.VisualStudio.2022.Enterprise",
 	"Corsair.iCUE",
 	"Git.Git",
@@ -53,6 +53,6 @@ $jobs = $pkgs | foreach-object {
 while($true) { 
 	Receive-Job $jobs -Wait
 }
-
+winget install "Microsoft.VisualStudioCode" -i 
 
 install-Module Az -Force -scope CurrentUser
