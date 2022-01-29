@@ -1,12 +1,17 @@
+$env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
+
+winget install "Microsoft.PowerShell" -h 
+pwsh -c { 
+$env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
+
+
 $pkgs = @(
 	"Microsoft.dotnet",
 	"Google.Chrome",
-	
 	"Microsoft.VisualStudio.2022.Enterprise",
 	"Corsair.iCUE",
 	"Git.Git",
 	"bicep",
-	"Microsoft.PowerShell",
 	"Microsoft.SQLServer.2019.Express"
 	"Microsoft.SQLServerManagementStudio"
 	"Microsoft.AzureDataStudio"
@@ -41,7 +46,7 @@ $pkgs = @(
 
 )
 
-$pkgs | foreach-object {
+$pkgs | foreach-object -parallel {
 winget list $_
 	if(-not($lastexitcode -eq 0)) {
 		 winget install -h $_
@@ -53,3 +58,4 @@ winget install "Microsoft.VisualStudioCode" -i
 winget install "vim.vim" -i 
 
 install-Module Az -Force -scope CurrentUser
+}
