@@ -41,17 +41,14 @@ $pkgs = @(
 
 )
 
-$jobs = $pkgs | foreach-object {
- 	Start-Job -ScriptBlock { 
-	param(
-	$name
-	)
-		 winget install -h $name
-	 } -ArgumentList $_
+$pkgs | foreach-object {
+winget list $_
+	if(-not($lastexitcode -eq 0)) {
+		 winget install -h $_
 }
-while($true) { 
-	Receive-Job $jobs -Wait
+
 }
+
 winget install "Microsoft.VisualStudioCode" -i 
 winget install "vim.vim" -i 
 
