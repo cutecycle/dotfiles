@@ -1,7 +1,7 @@
 $env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
 
 winget install "Microsoft.PowerShell" -h 
-pwsh -c { 
+& "C:\Program Files\PowerShell\7\pwsh.exe" -c { 
 $env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
 
 
