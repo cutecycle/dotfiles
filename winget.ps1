@@ -42,6 +42,7 @@ $pkgs = @(
 	"MITMediaLab.Scratch.3"
 	"VideoLAN.VLC"
 	"Google.Drive"
+	"Canonical.Ubuntu"
 
 
 
