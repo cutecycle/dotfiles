@@ -43,6 +43,7 @@ $pkgs = @(
 	"VideoLAN.VLC"
 	"Google.Drive"
 	"Canonical.Ubuntu"
+	"Python.Python3"
 
 
 
