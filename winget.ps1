@@ -44,6 +44,7 @@ $pkgs = @(
 	"Google.Drive"
 	"Canonical.Ubuntu"
 	"Python.Python3"
+	"OpenJS.NodeJS"
 
 
 
