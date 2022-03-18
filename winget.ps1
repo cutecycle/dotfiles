@@ -7,6 +7,7 @@ $env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
 
 $pkgs = @(
 	"Microsoft.dotnet",
+	"Microsoft.PowerToys",
 	"Google.Chrome",
 	"Microsoft.VisualStudio.2022.Enterprise",
 	"Corsair.iCUE",
