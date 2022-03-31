@@ -9,7 +9,6 @@ $pkgs = @(
 	"Microsoft.dotnet",
 	"Microsoft.PowerToys",
 	"Google.Chrome",
-	"Microsoft.VisualStudio.2022.Enterprise",
 	"Corsair.iCUE",
 	"Git.Git",
 	"bicep",
@@ -52,6 +51,16 @@ $pkgs = @(
 
 )
 
+& {
+Invoke-Webrequest https://aka.ms/vs/17/release/vs_enterprise.exe -outFile vs_enterprise.exe
+./vs_enterprise.exe --allWorkloads -q
+} &
+
+& {
+Invoke-Webrequest https://aka.ms/vs/17/release/vs_community.exe -outFile vs_community.exe
+./vs_community.exe --allWorkloads -q
+} &
+
 $pkgs | foreach-object -parallel {
 winget list $_
 	if(-not($lastexitcode -eq 0)) {
@@ -66,3 +75,7 @@ winget install "vim.vim" -i
 install-Module Az -Force -scope CurrentUser
 }
 dotnet tool install --global dotnet-repl
+Invoke-Webrequest https://raw.githubusercontent.com/dotnet/aspnetcore/main/eng/scripts/InstallVisualStudio.ps1 -OutFile InstallVisualStudio.ps1
+Invoke-Webrequest https://raw.githubusercontent.com/dotnet/aspnetcore/main/eng/scripts/vs.17.json -OutFile vs.17.json
+./InstallVisualStudio.ps1 -Edition Community -Quiet &
+./InstallVisualStudio.ps1 -Edition Enterprise -Quiet &
