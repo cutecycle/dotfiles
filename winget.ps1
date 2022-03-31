@@ -65,3 +65,4 @@ winget install "vim.vim" -i
 
 install-Module Az -Force -scope CurrentUser
 }
+dotnet tool install --global dotnet-repl
