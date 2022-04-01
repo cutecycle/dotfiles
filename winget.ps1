@@ -1,4 +1,7 @@
 $wingeturl=(((Invoke-WebRequest https://api.github.com/repos/microsoft/winget-cli/releases/latest).Content | convertfrom-json ).assets  | where { $_.browser_download_url -match "msixbundle" }).browser_download_url
+
+Invoke-WebRequest $wingeturl -OutFile winget.msixbundle 
+Add-AppxPackage -Path (Get-Item winget.msixbundle).FullName
 $env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
 
 winget install "Microsoft.PowerShell" -h 
