@@ -1,3 +1,4 @@
+$wingeturl=(((Invoke-WebRequest https://api.github.com/repos/microsoft/winget-cli/releases/latest).Content | convertfrom-json ).assets  | where { $_.browser_download_url -match "msixbundle" }).browser_download_url
 $env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
 
 winget install "Microsoft.PowerShell" -h 
@@ -45,10 +46,6 @@ $pkgs = @(
 	"Canonical.Ubuntu"
 	"Python.Python3"
 	"OpenJS.NodeJS"
-
-
-
-
 )
 
 & {
@@ -75,7 +72,4 @@ winget install "vim.vim" -i
 install-Module Az -Force -scope CurrentUser
 }
 dotnet tool install --global dotnet-repl
-Invoke-Webrequest https://raw.githubusercontent.com/dotnet/aspnetcore/main/eng/scripts/InstallVisualStudio.ps1 -OutFile InstallVisualStudio.ps1
-Invoke-Webrequest https://raw.githubusercontent.com/dotnet/aspnetcore/main/eng/scripts/vs.17.json -OutFile vs.17.json
-./InstallVisualStudio.ps1 -Edition Community -Quiet &
-./InstallVisualStudio.ps1 -Edition Enterprise -Quiet &
+
