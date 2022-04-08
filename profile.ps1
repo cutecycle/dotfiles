@@ -23,7 +23,7 @@ function Cache-Command {
         Start-ThreadJob { 
             $result = $using:result
             $target = $using:target
-            Set-Content -Path $target -Value $result
+            Set-Content -Path $target -Value $result -Force
         }
     }
 }
@@ -36,8 +36,10 @@ function Synchronize-Dotfiles {
     Start-ThreadJob { 
         $source = $using:source
         $content = (Invoke-WebRequest $source).Content
-            $content | Set-Content -Path $PROFILE
+        while($true) {
+            $content | Set-Content -Path $PROFILE -Force
             Start-Sleep -Seconds 900
+            }
       
     }
 }
