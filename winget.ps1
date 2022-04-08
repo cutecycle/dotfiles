@@ -69,10 +69,21 @@ winget list $_
 
 }
 
-winget install "Microsoft.VisualStudioCode" -i 
-winget install "vim.vim" -i 
-
-install-Module Az -Force -scope CurrentUser
+$vscode = Start-Job {
+	winget install "Microsoft.VisualStudioCode" -i 
 }
+$winget = Start-Job { 
+winget install "vim.vim" -i 
+}
+@( 
+	"Az"
+	"oh-my-posh"
+) | Foreach-object {
+install-Module $_ -Force -scope CurrentUser
+}
+}
+
 dotnet tool install --global dotnet-repl
 
+
+Invoke-Webrequest "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1" -OutFile $PROFILE
