@@ -51,8 +51,8 @@ function Get-Dotfiles {
 
 
 	Write-Information ("ProfilePath:" + $profilePath)
-	Write-Information $content.Substring(0, 20)
-	Write-Information $profileContent.Substring(0, 20)
+	Write-Information $content
+	Write-Information $profileContent
            
 	$diff = (Compare-Object $profileContent $content)
 	if ($diff) {
