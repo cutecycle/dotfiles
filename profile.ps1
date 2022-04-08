@@ -32,16 +32,13 @@ $azContext = Cache-Command {
 }
 function Synchronize-Dotfiles {
     # Stay unidirectional. only edit in codespaces
-    Start-Job { 
+    
+    Start-ThreadJob { 
         $source = $using:source
         $content = (Invoke-WebRequest $source).Content
-        try { 
-            $content | Set-Content -Path $PROFILE | Out-Null
+            $content | Set-Content -Path $PROFILE
             Start-Sleep -Seconds 900
-        }
-        catch { 
-
-        }
+      
     }
 }
 function touch { 
