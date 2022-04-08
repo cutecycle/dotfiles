@@ -8,7 +8,6 @@ function touch {
 	)
 	echo $null  >> $file
 }
-$env:PATH += ";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts"
 function endit {
     $procs = (Get-Process | Where-Object { $_.MainWindowTitle -ne "" } 
    $procs | Foreach-object -Parallel { 
@@ -68,7 +67,7 @@ function Find-AzPortal {
         [Parameter(Position = 0)]
         $name
     )
-    $url = "https://ms.portal.azure.com/#@microsoft.onmicrosoft.com/resource"
+    $url = "https://portal.azure.com/#$((Get-AzContext).Tenant.Id))/resource"
     $resources = (Get-AzResource -Name *$name*)
     foreach ($resource in $resources) {
         Start-Process ($url + $resource.ResourceId)
@@ -78,13 +77,13 @@ function Find-AzPortal {
 function Biglots {
  k edge
 }
-function Get-ActiveDeployments {
-Get-AzDeployment | Where-Object {$_.ProvisioningState -eq "Running" } 
+function Get-Deployments{
+    Get-AzDeployment | Where-Object {$_.ProvisioningState -eq "Running" } 
 }
 
-#$sparkpath = "C:\Users\ninareynolds\Downloads\spark-3.1.2-bin-hadoop3.2"
-$sparkpath = "C:\Users\ninareynolds\Downloads\spark-3.0.1-bin-hadoop2.7"
-$Env:Path = "$($Env:PATH)" + ";C:\Program Files\Vim\vim82" + ";" + $sparkpath
-$Env:HADOOP_HOME = $sparkpath
-$env:SPARK_HOME =  $sparkpath
-# setx /M PATH "%PATH%;%HADOOP_HOME%;%SPARK_HOME%\bin"
+$extras = @(
+";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts",
+";C:\Program Files\Vim\vim82"
+
+)
+$env:PATH+= (Join-String $extras)
