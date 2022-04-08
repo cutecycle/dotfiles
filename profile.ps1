@@ -41,20 +41,21 @@ $module = New-Module -Name Profile -ScriptBlock {
 		# Stay unidirectional. only edit in codespaces
     
 		# Start-ThreadJob { 
-			# $source = $using:source
-			# $profilePath = $using:PROFILE
-			$profilePath = $PROFILE
-			$content = (Invoke-WebRequest $source).Content
+		# $source = $using:source
+		# $profilePath = $using:PROFILE
+		$profilePath = $PROFILE
+		$content = (Invoke-WebRequest $source).Content
            
-			$profileContent = get-content  $profilePath 
-			$diff = (Compare-Object $profileContent $content)
-			write-host "checking dotfile"
-			if ($diff) {
-				Remove-Item -Force $profilePath
-				Set-Content -Path $profilePath -Value $content -Force
-				Write-Host "Change Detected!"
-				Write-Output "Change Detected!"
-			}
+		$profileContent = get-content  $profilePath 
+		$diff = (Compare-Object $profileContent $content)
+		if ($diff) {
+			Remove-Item -Force $profilePath
+			Set-Content -Path $profilePath -Value $content -Force
+			Write-Output $true 
+		}
+		else { 
+			Write-Output $false 
+		}
 		# }
 	}
 	function touch { 
@@ -137,7 +138,7 @@ function Build-Prompt {
 	(@(
 		"☁️",
 		$subName,
-		"����"
+		"����
 		$subAccount,
 		$fancyJobsList,
 		$gitContext,
