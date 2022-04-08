@@ -120,6 +120,7 @@ $extras = @(
 $env:PATH += ($extras | Join-String)
 $jobs = @()
 function prompt {
+    $str = ""
 	$str = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
 	}
