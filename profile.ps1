@@ -119,16 +119,26 @@ $extras = @(
 )
 $env:PATH += ($extras | Join-String)
 $jobs = @()
-function prompt {
-    $str = ""
-	$str = $jobs | Foreach-Object { 
+function Build-Prompt { 
+	$fancyJobsList = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
-	}
-	$str += "$($jobs.length)  jobs/"
-	$str += $pwd.Path
-	$str += ">"
+	})
+	$subName = ($azContext.Subscription.Name)
+	$subAccount = ($azContext.Account.Id)
+	Join-String @(
+		$subName,
+		$subAccount,
+		$fancyJobsList,
+		$gitContext,
+		$pwd.Path,
+		"➡️ "
+	)
+	
+	
+}
+function prompt {
 	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	$jobs += (Synchronize-Dotfiles)
-	$str
 }
+
 
