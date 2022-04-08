@@ -40,7 +40,7 @@ $module = New-Module -Name Profile -ScriptBlock {
 	function Get-Dotfiles {
 		# Stay unidirectional. only edit in codespaces
     
-		Start-ThreadJob { 
+		# Start-ThreadJob { 
 			$source = $using:source
 			$profilePath = $using:PROFILE
 			$content = (Invoke-WebRequest $source).Content
@@ -53,7 +53,7 @@ $module = New-Module -Name Profile -ScriptBlock {
 				Write-Host "Change Detected!"
 				Write-Output "Change Detected!"
 			}
-		}
+		# }
 	}
 	function touch { 
 		param(
