@@ -41,7 +41,7 @@ function Synchronize-Dotfiles {
         $start = Get-Date
             $content | Set-Content -Path $PROFILE -Force
            
-            $profileContent get-content  $PROFILE 
+            $profileContent= get-content  $PROFILE 
             $diff=diff $profileContent $content
             if($diff) {
                 Write-Output "Change Detected!"
@@ -122,5 +122,5 @@ function prompt {
     $jobs += @(
         (Synchronize-Dotfiles)
     )
-$jobs | where {$_.Status -eq "Completed"} |s Receive-Job 
+$jobs | where {$_.Status -eq "Completed"} | Receive-Job 
 }
