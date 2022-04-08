@@ -180,8 +180,8 @@ function Build-Prompt {
 	}
 	$newDotFile = (Refresh-Job $dotFileRefreshService)
 	(@(
-		("⌚" +
-		(times))
+		("⌚"),
+		(times),
 		# "`n",
 		($newDotFile ? "new Dotfile!" : "")
 		(git symbolic-ref --short HEAD),
@@ -193,16 +193,19 @@ function Build-Prompt {
 		# "`n"
 		$pwd.Path,
 		"> "
-	)) | Foreach-Object {
+	)) | Where-Object {
+		$null -ne $_
+	}
+	Foreach-Object {
 		fancyNull $_
 	} | Join-String -Separator " / "
 }
-$end = (Get-Date)
 # $time = (New-TimeSpan -Start $start -end $end).Seconds
 # Write-Host "Profile read in $($time) Seconds"
 function prompt {
 	Build-Prompt
 }
+prompt
 
 
 
