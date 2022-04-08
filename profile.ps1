@@ -47,6 +47,7 @@ $module = New-Module -Name Profile -ScriptBlock {
            
 			$profileContent = get-content  $profilePath 
 			$diff = (Compare-Object $profileContent $content)
+			write-host "checking dotfile"
 			if ($diff) {
 				Remove-Item -Force $profilePath
 				Set-Content -Path $profilePath -Value $content -Force
@@ -133,7 +134,9 @@ function Build-Prompt {
 	$subName = ($azContext.Subscription.Name)
 	$subAccount = ($azContext.Account.Id)
 	(@(
+		"☁️",
 		$subName,
+		"����"
 		$subAccount,
 		$fancyJobsList,
 		$gitContext,
@@ -142,8 +145,9 @@ function Build-Prompt {
 	) | Join-String -Separator " / ")
 }
 function prompt {
-	$jobs += (Get-Dotfiles)
-	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
+	# $jobs += (Get-Dotfiles)
+	# $jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
+	Get-Dotfiles
 	Build-Prompt
 }
 
