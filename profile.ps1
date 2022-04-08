@@ -194,7 +194,7 @@ function Build-Prompt {
 		$fancyJobsList,
 		$gitContext,
 		$pwd.Path,
-		"➡️ "
+		"> "
 	) | Join-String -Separator " _ ")
 }
 # function prompt {
