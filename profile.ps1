@@ -195,7 +195,7 @@ function Build-Prompt {
 		"> "
 	)) | Where-Object {
 		$null -ne $_
-	}
+	}|
 	Foreach-Object {
 		fancyNull $_
 	} | Join-String -Separator " / "
