@@ -1,8 +1,9 @@
+$module = New-Module -Name Profile -ScriptBlock {
+
 $exceptions = "Teams", "iCUE"
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 
 # Set-PoshPrompt -theme M365Princess
-Set-PoshPrompt -theme stelbent.minimal
 function Cache-Command { 
     param(
         [Parameter(ValueFromPipeline = $true)]
@@ -102,6 +103,9 @@ function Biglots {
 function Get-Deployments {
     Get-AzDeployment | Where-Object { $_.ProvisioningState -eq "Running" } 
 }
+}
+Import-Module $module
+Set-PoshPrompt -theme stelbent.minimal
 
 $extras = @(
     ";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts",
