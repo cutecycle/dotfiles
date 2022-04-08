@@ -14,7 +14,7 @@ function Cache-Command {
     $commandHash = (Get-FileHash -InputStream $mystream -Algorithm SHA256).Hash
     $target = "~/.cache/$commandHash"
     try {
-        $stale = (Get-Item -Path $target).CreationTime -gt (Get-Date).AddDays(-1) *> Out-Null
+        $fresh= (Get-Item -Path $target).CreationTime -lt (Get-Date).AddDays(-1) -ErrorAction SilentlyContinue
     }
     catch {
         $stale = $true
