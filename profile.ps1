@@ -117,7 +117,7 @@ $extras = @(
     ";C:\Program Files\Vim\vim82"
 )
 $env:PATH += ($extras | Join-String)
-
+$jobs=@()
 function prompt {
     $str = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
