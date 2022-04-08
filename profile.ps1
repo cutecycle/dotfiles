@@ -13,10 +13,9 @@ function Cache-Command {
     $mystream = [IO.MemoryStream]::new([byte[]][char[]]$commandString)
     $commandHash = (Get-FileHash -InputStream $mystream -Algorithm SHA256).Hash
     $target = "~/.cache/$commandHash"
-    try {
-        $fresh= (Get-Item -Path $target).CreationTime -lt (Get-Date).AddDays(-1) -ErrorAction SilentlyContinue
-    }
-    catch {
+    if(Test-Path $target){
+        $fresh= (Get-Item -Path $target).CreationTime -lt (Get-Date).AddDays(-1) 
+    }else{
         $stale = $true
     }
     $result = Invoke-Command $command -NoNewScope
