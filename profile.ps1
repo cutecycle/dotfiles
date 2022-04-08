@@ -45,7 +45,7 @@ function Synchronize-Dotfiles {
             $diff=(diff $profileContent $content -ExcludeEqual)
             if($diff) {
                 Write-Output "Change Detected!"
-                Write-Output $diff
+                # Write-Output $diff
             }
     }
 }
