@@ -139,6 +139,7 @@ function Build-Prompt {
 function prompt {
 	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	$jobs += (Synchronize-Dotfiles)
+	Build-Prompt
 }
 
 
