@@ -1,21 +1,61 @@
-$exceptions = "Teams","iCUE"
+$exceptions = "Teams", "iCUE"
+$source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 
-Set-PoshPrompt -theme agnoster
+# Set-PoshPrompt -theme M365Princess
+Set-PoshPrompt -theme stelbent.minimal
+function Cache-Command { 
+    param(
+        [Parameters(ValueFromPipeline = $true)]
+        $command
+    )
+    $commandString = $command.ToString()
+    $mystream = [IO.MemoryStream]::new([byte[]][char[]]$commandString)
+    $commandHash = Get-FileHash -InputStream $mystream -Algorithm SHA256
+    $target = "~/.cache/$commandHash"
+    try {
+        $stale = (Get-Item -Path $target).CreationTime -gt (Get-Date).AddDays(-1)
+    }
+    catch {
+        $stale = $true
+    }
+    $result = Invoke-Command $command -NoNewScope
+    if ($stale) {
+        Start-ThreadJob { 
+            $result = $using:result
+            $target = $using:target
+            Set-Content -Path $target -Value $result
+        }
+    }
+}
+$azContext = Cache-Command {
+    Get-AzContext
+}
+function Synchronize-Dotfiles {
+    # Stay unidirectional. only edit in codespaces
+    Start-Job { 
+        $source = $using:source
+        $content = (Invoke-WebRequest $source).Content
+        try { 
+            $content | Set-Content -Path $PROFILE | Out-Null
+            Start-Sleep -Seconds 900
+        }
+        catch { 
 
+        }
+    }
+}
 function touch { 
-	param(
-		$file
-	)
-	echo $null  >> $file
+    param(
+        $file
+    )
+    echo $null  >> $file
 }
 function endit {
-    $procs = (Get-Process | Where-Object { $_.MainWindowTitle -ne "" } 
-   $procs | Foreach-object -Parallel { 
-       Stop-process $_
-   }
-   } 
-    Stop-Process $procs -ErrorAction SilentlyContinue 
-}
+    $procs = (Get-Process | Where-Object { $_.MainWindowTitle -ne "" })
+    $procs | Foreach-object -Parallel { 
+        Stop-process $_ -ErrorAction "SilentlyContinue"
+    }
+} 
 function k {
     param(
         [Parameter(Position = 0)]
@@ -33,57 +73,40 @@ function cpu {
 function mem { 
     Get-Process | Sort-Object -Property WS -Descending | Select-Object -First 5
 }
-function cleanup {
-    # Start-Job -ScriptBlock {
-    C:\Users\ninareynolds\Documents\repos\clones\FFIN-MFRR-MSFFR-MFRepo\Infrastructure\Developer\Set-Activation.ps1 -matchExpression "Y-DEV" -justification "clean y-dev"  
-        
-    C:\Users\ninareynolds\Documents\repos\clones\FFIN-MFRR-MSFFR-MFRepo\Infrastructure\Admin\NukeResourceGroups.ps1 -resourceGroupMatchList "Y-DEV"
-        
-
-    # }
-
-}
-
-function Set-Activation { 
-    param ( 
-        [Parameter(Position = 0)]
-        $letter,
-        [Parameter(Position = 1)]
-        $justification
-    )
-    .\infrastructure\developer\set-activation.ps1 -justification $justification -matchExpression "$letter-DEV-COMMON|$letter-DEV-DW|$letter-DEV-ADF"
-}
 
 function brb { 
-    Start-Process "https://i.kym-cdn.com/entries/icons/facebook/000/025/688/maxresdefault.jpg"
+    Start-Process "https://i.kym-cdn.com/entries/icons/facebook/000/025/688/maxresdefault.jpg" -WindowStyle Maximized
 }
 function vsclear { 
     k code 
     Remove-Item -Recurse -Force -Path "$Env:APPDATA\Code\Backups"
 }
-
 function Find-AzPortal {
     param ( 
         [Parameter(Position = 0)]
         $name
     )
-    $url = "https://portal.azure.com/#$((Get-AzContext).Tenant.Id))/resource"
-    $resources = (Get-AzResource -Name *$name*)
-    foreach ($resource in $resources) {
-        Start-Process ($url + $resource.ResourceId)
+    $url = "https://$($azContext.Environment.ManagementPortalUrl)/#$(($azContext).Tenant.Id))/resource"
+    $resources = (Get-AzResource -Name *$name*)[0..5]
+    $resources | ForEach-Object { 
+        $url + $resource.ResourceId
     }
+    | ForEach-Object -Parallel { 
+        Start-Process $_
+    }
+    
 }
 
 function Biglots {
- k edge
+    k edge
 }
-function Get-Deployments{
-    Get-AzDeployment | Where-Object {$_.ProvisioningState -eq "Running" } 
+function Get-Deployments {
+    Get-AzDeployment | Where-Object { $_.ProvisioningState -eq "Running" } 
 }
 
 $extras = @(
-";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts",
-";C:\Program Files\Vim\vim82"
-
+    ";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts",
+    ";C:\Program Files\Vim\vim82"
 )
-$env:PATH+= (Join-String $extras)
+$env:PATH += (Join-String $extras)
+Synchronize-Dotfiles | Out-Null
