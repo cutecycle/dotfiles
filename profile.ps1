@@ -126,5 +126,5 @@ function prompt {
         (($_.status -eq "Completed") ? "✅": "♻️")
     }
 $jobs | Receive-Job 
-Write-Host $str
+$str
 }
