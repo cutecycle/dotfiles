@@ -4,6 +4,7 @@ Invoke-WebRequest $wingeturl -OutFile winget.msixbundle
 Add-AppxPackage -Path (Get-Item winget.msixbundle).FullName
 $env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
 
+Invoke-Webrequest "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1" -OutFile $PROFILE
 winget install "Microsoft.PowerShell" -h 
 & "C:\Program Files\PowerShell\7\pwsh.exe" -c { 
 	$env:PATH = $env:PATH + ";" + ($env:LOCALAPPDATA + "\Microsoft\WindowsApps\")
@@ -93,5 +94,3 @@ winget install "Microsoft.PowerShell" -h
 }
 
 
-
-Invoke-Webrequest "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1" -OutFile $PROFILE

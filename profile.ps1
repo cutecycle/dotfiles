@@ -5,7 +5,7 @@ $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.p
 Set-PoshPrompt -theme stelbent.minimal
 function Cache-Command { 
     param(
-        [Parameters(ValueFromPipeline = $true)]
+        [Parameter(ValueFromPipeline = $true)]
         $command
     )
     $commandString = $command.ToString()
