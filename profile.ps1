@@ -41,8 +41,9 @@ $module = New-Module -Name Profile -ScriptBlock {
 		# Stay unidirectional. only edit in codespaces
     
 		# Start-ThreadJob { 
-			$source = $using:source
-			$profilePath = $using:PROFILE
+			# $source = $using:source
+			# $profilePath = $using:PROFILE
+			$profilePath = $PROFILE
 			$content = (Invoke-WebRequest $source).Content
            
 			$profileContent = get-content  $profilePath 
