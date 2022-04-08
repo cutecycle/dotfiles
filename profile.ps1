@@ -37,7 +37,7 @@ $module = New-Module -Name Profile -ScriptBlock {
 	$azContext = Cache-Command {
 		Get-AzContext
 	}
-	function Synchronize-Dotfiles {
+	function Get-Dotfiles {
 		# Stay unidirectional. only edit in codespaces
     
 		Start-ThreadJob { 
@@ -50,8 +50,8 @@ $module = New-Module -Name Profile -ScriptBlock {
 			if ($diff) {
 				Remove-Item -Force $profilePath
 				Set-Content -Path $profilePath -Value $content -Force
+				Write-Host "Change Detected!"
 				Write-Output "Change Detected!"
-
 			}
 		}
 	}
@@ -142,7 +142,7 @@ function Build-Prompt {
 	) | Join-String -Separator " / ")
 }
 function prompt {
-	$jobs += (Synchronize-Dotfiles)
+	$jobs += (Get-Dotfiles)
 	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	Build-Prompt
 }
