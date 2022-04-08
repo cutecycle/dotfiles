@@ -122,5 +122,5 @@ function prompt {
     $jobs += @(
         (Synchronize-Dotfiles)
     )
-$jobs | where {$_.Status -eq "Completed"} | Receive-Job 
+$jobs | Receive-Job 
 }
