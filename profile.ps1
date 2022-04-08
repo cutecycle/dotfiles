@@ -163,7 +163,7 @@ function times {
 		(
 		($_ -creplace "[a-z]", "") -replace " ", "") + " " + `
 		(
-			[System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), $_)
+			[System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), $_).ToShortTimeString()
 		)
 	}
 }
