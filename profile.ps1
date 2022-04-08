@@ -124,6 +124,7 @@ function Build-Prompt {
 	$fancyJobsList = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
 	}
+	$azContext = (Get-AzContext)
 	$subName = ($azContext.Subscription.Name)
 	$subAccount = ($azContext.Account.Id)
 	(@(
@@ -140,5 +141,6 @@ function prompt {
 	$jobs += (Synchronize-Dotfiles)
 	Build-Prompt
 }
+
 
 
