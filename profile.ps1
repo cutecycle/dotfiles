@@ -138,13 +138,13 @@ function Build-Prompt {
 	(@(
 		"☁️",
 		$subName,
-		"����
+		"����",
 		$subAccount,
 		$fancyJobsList,
 		$gitContext,
 		$pwd.Path,
 		"➡️ "
-	) | Join-String -Separator " / ")
+	) | Join-String -Separator " /")
 }
 function prompt {
 	# $jobs += (Get-Dotfiles)
@@ -156,3 +156,4 @@ function prompt {
 
 
 
+\
