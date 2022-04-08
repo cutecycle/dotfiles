@@ -117,7 +117,6 @@ $extras = @(
     ";C:\Program Files\Vim\vim82"
 )
 $env:PATH += ($extras | Join-String)
-Synchronize-Dotfiles
 
 function prompt {
     $jobs += @(
