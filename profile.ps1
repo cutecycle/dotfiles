@@ -133,8 +133,6 @@ function Build-Prompt {
 		$pwd.Path,
 		"➡️ "
 	)
-	
-	
 }
 function prompt {
 	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
