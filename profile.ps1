@@ -123,7 +123,8 @@ function prompt {
         (Synchronize-Dotfiles)
     )
     $str = $jobs | Foreach-Object { 
-        ($_.status -eq "Completed") ? "✅" : ♻️
+        (($_.status -eq "Completed") ? "✅": "♻️")
     }
 $jobs | Receive-Job 
+Write-Host $str
 }
