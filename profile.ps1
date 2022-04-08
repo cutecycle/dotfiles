@@ -182,7 +182,7 @@ function Build-Prompt {
 	(@(
 		("⌚" +
 		(times))
-		"`n",
+		# "`n",
 		($newDotFile ? "new Dotfile!" : "")
 		(git symbolic-ref --short HEAD),
 		("" + $subName),
@@ -190,7 +190,7 @@ function Build-Prompt {
 		$subAccount),
 		# $fancyJobsList,
 		$gitContext,
-		"`n"
+		# "`n"
 		$pwd.Path,
 		"> "
 	)) | Foreach-Object {
