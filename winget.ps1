@@ -12,6 +12,7 @@ winget install "Microsoft.PowerShell" -h
 
 	$pkgs = @(
 		"Microsoft.dotnet",
+		"SourceFoundry.HackFonts",
 		"Microsoft.PowerToys",
 		"Google.Chrome",
 		"Corsair.iCUE",

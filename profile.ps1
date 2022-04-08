@@ -43,19 +43,20 @@ $module = New-Module -Name Profile -ScriptBlock {
 		# Start-ThreadJob { 
 		# $source = $using:source
 		# $profilePath = $using:PROFILE
-		$profilePath = $PROFILE
 		$content = (Invoke-WebRequest $source).Content
+		Write-Information ("ProfilePath:" + $profilePath)
+		Write-Information $content.Substring(0, 20)
+		Write-Information $profileContent.Substring(0, 20)
            
 		$profileContent = get-content $profilePath 
 		$diff = (Compare-Object $profileContent $content)
 		if ($diff) {
 			Remove-Item -Force $profilePath
 			Set-Content -Path $profilePath -Value $content -Force
-			Write-Output $true 
+			Write-Information "diff detected."
+			$diff | Out-String | Write-Information
 		}
-		else { 
-			Write-Output $false 
-		}
+		Write-Output ($null -ne $diff)
 	}
 	function touch { 
 		param(
@@ -154,22 +155,23 @@ function Refresh-Job {
 		$job
 	) 
 
+	$name = ($job.name)
 	$result = $job | Receive-job -Keep 
 	$result
 	if ($null -eq $result) {
 		$job = Start-ThreadJob $using:scriptBlock
 	}
-	$job =	Start-ThreadJob -ScriptBlock ([scriptblock]::Create($job.Command))
-
+	Write-Information ("Background service $name $($job.State): $result")
+	$job =	Start-ThreadJob -Name $job.Name -ScriptBlock ([scriptblock]::Create($job.Command))
 
 }
 
 $azContextService = Start-ThreadJob {
 	Get-AzContext
-}
+} -Name "Azure Context Service"
 $dotFileRefreshService = Start-ThreadJob {
 	Get-DotFiles
-}
+} -Name "Dotfiles Service"
 
 function mail { 
 	Start-Process "https://outlook.office.com/mail" &
@@ -179,11 +181,24 @@ function fancyNull {
 	param(
 		$obj
 	)
-	$obj ? $obj : "?"
+	($null -eq $obj) ? "?" : $obj
+}
+function times { 
+	@(
+		"Eastern Standard Time",
+		"Pacific Standard Time",
+		"UTC"
+	) | Foreach-Object {
+		(
+		($_ -creplace "[a-z]", "") -replace " ", "") + " " + `
+		(
+			[System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), $_)
+		)
+	}
 }
 function Build-Prompt { 
 	# $fancyJobsList = Get-Job | Foreach-Object { 
-    #     (($_.status -eq "Completed") ? "": "♻️")
+	#     (($_.status -eq "Completed") ? "": "♻️")
 	# }
 	# $fancyJobsList = ((Get-Job).length + " jobs")
 
@@ -194,16 +209,22 @@ function Build-Prompt {
 	}
 	$newDotFile = (Refresh-Job $dotFileRefreshService)
 	(@(
+		("⌚" +
+		(times))
+		"`n",
 		($newDotFile ? "new Dotfile!" : "")
-		,
+		(git symbolic-ref --short HEAD),
 		("" + $subName),
 		("" +
 		$subAccount),
-		$fancyJobsList,
+		# $fancyJobsList,
 		$gitContext,
+		"`n"
 		$pwd.Path,
 		"> "
-	) | Join-String -Separator "|")
+	)) | Foreach-Object {
+		fancyNull $_
+	} | Join-String -Separator " / "
 }
 function prompt {
 	Build-Prompt
