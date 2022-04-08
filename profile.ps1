@@ -46,6 +46,7 @@ $module = New-Module -Name Profile -ScriptBlock {
 				Write-Output "Change Detected!"
 				Remove-Item -Force $profilePath
 				Set-Content -Path $profilePath -Value $content -Force
+                
 			}
 		}
 	}
