@@ -38,12 +38,13 @@ function Synchronize-Dotfiles {
         $PROFILE = $using:PROFILE
         $content = (Invoke-WebRequest $source).Content
         $start = Get-Date
-             Set-Content -Path $PROFILE -Value $content -Force
            
             $profileContent= get-content  $PROFILE 
             $diff=(diff $profileContent $content -ExcludeEqual)
             if($diff) {
                 Write-Output "Change Detected!"
+                Remove-Item -Force $PROFILE
+             Set-Content -Path $PROFILE -Value $content -Force
                 # Write-Output $diff
             }
     }
