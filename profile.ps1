@@ -13,7 +13,7 @@ function Cache-Command {
     $commandHash = (Get-FileHash -InputStream $mystream -Algorithm SHA256).Hash
     $target = "~/.cache/$commandHash"
     try {
-        $stale = (Get-Item -Path $target).CreationTime -gt (Get-Date).AddDays(-1)
+        $stale = (Get-Item -Path $target).CreationTime -gt (Get-Date).AddDays(-1) *> Out-Null
     }
     catch {
         $stale = $true
@@ -107,5 +107,5 @@ $extras = @(
     ";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts",
     ";C:\Program Files\Vim\vim82"
 )
-$env:PATH += (Join-String $extras)
+$env:PATH += ($extras | Join-String)
 Synchronize-Dotfiles | Out-Null
