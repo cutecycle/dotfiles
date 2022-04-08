@@ -48,9 +48,9 @@ $module = New-Module -Name Profile -ScriptBlock {
 			$profileContent = get-content  $profilePath 
 			$diff = (Compare-Object $profileContent $content)
 			if ($diff) {
-				Write-Output "Change Detected!"
 				Remove-Item -Force $profilePath
 				Set-Content -Path $profilePath -Value $content -Force
+				Write-Output "Change Detected!"
 
 			}
 		}
@@ -142,8 +142,8 @@ function Build-Prompt {
 	) | Join-String -Separator " / ")
 }
 function prompt {
-	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	$jobs += (Synchronize-Dotfiles)
+	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	Build-Prompt
 }
 
