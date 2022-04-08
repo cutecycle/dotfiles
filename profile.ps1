@@ -139,7 +139,7 @@ function Build-Prompt {
 		$gitContext,
 		$pwd.Path,
 		"➡️ "
-	) | Join-String)
+	) | Join-String -Separator " / ")
 }
 function prompt {
 	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
