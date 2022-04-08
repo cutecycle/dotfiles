@@ -119,13 +119,13 @@ $extras = @(
 $env:PATH += ($extras | Join-String)
 
 function prompt {
-    $jobs += @(
-        (Synchronize-Dotfiles)
-    )
     $str = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
     }
     $str += ">"
-$jobs | Receive-Job 
 $str
+    $jobs += @(
+        (Synchronize-Dotfiles)
+    )
+$jobs | Receive-Job 
 }
