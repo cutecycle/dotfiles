@@ -39,9 +39,13 @@ function Synchronize-Dotfiles {
         $content = (Invoke-WebRequest $source).Content
         $PROFILE = $using:PROFILE
         $start = Get-Date
-        while($start -lt (Get-Date).AddHours(1)) {
             $content | Set-Content -Path $PROFILE -Force
-            Start-Sleep -Seconds 900
+           
+            $profileContent get-content  $PROFILE 
+            $diff=diff $profileContent $content
+            if($diff) {
+                Write-Output "Change Detected!"
+                Write-Output $diff
             }
     }
 }
@@ -113,4 +117,11 @@ $extras = @(
     ";C:\Program Files\Vim\vim82"
 )
 $env:PATH += ($extras | Join-String)
-Synchronize-Dotfiles | Out-Null
+Synchronize-Dotfiles
+
+function prompt {
+    $jobs += @(
+        (Synchronize-Dotfiles)
+    )
+$jobs | where {$_.Status -eq "Completed"} |s Receive-Job 
+}
