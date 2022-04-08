@@ -2,6 +2,11 @@ $module = New-Module -Name Profile -ScriptBlock {
 
 	$exceptions = "Teams", "iCUE"
 	$source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
+	function g {
+		git add . 
+		git commit -m "wip"
+		git push
+	}
 
 	# Set-PoshPrompt -theme M365Princess
 	function Cache-Command { 
