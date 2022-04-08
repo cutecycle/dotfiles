@@ -37,11 +37,12 @@ function Synchronize-Dotfiles {
     Start-ThreadJob { 
         $source = $using:source
         $content = (Invoke-WebRequest $source).Content
-        while($true) {
+        $PROFILE = $using:PROFILE
+        $start = Get-Date
+        while($start -lt (Get-Date).AddHours(1)) {
             $content | Set-Content -Path $PROFILE -Force
             Start-Sleep -Seconds 900
             }
-      
     }
 }
 function touch { 
