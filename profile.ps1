@@ -47,11 +47,13 @@ function Get-Dotfiles {
 	# $source = $using:source
 	# $profilePath = $using:PROFILE
 	$content = (Invoke-WebRequest $source).Content
+	$profileContent = get-content $profilePath 
+
+
 	Write-Information ("ProfilePath:" + $profilePath)
 	Write-Information $content.Substring(0, 20)
 	Write-Information $profileContent.Substring(0, 20)
            
-	$profileContent = get-content $profilePath 
 	$diff = (Compare-Object $profileContent $content)
 	if ($diff) {
 		Remove-Item -Force $profilePath
