@@ -132,9 +132,6 @@ function Refresh-Job {
 	$name = ($job.name)
 	$result = $job | Receive-job -Keep 
 	$result
-	if ($null -eq $result) {
-		$job = Start-ThreadJob $using:scriptBlock
-	}
 	Write-Information ("Background service $name $($job.State): $result")
 	$job =	Start-ThreadJob -Name $job.Name -ScriptBlock ([scriptblock]::Create($job.Command))
 
