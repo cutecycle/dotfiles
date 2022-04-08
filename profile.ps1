@@ -37,6 +37,10 @@ $azContext = Cache-Command {
 	Get-AzContext
 }
 function Get-Dotfiles {
+	param(
+		$source,
+		$profilePath
+	)
 	# Stay unidirectional. only edit in codespaces
     
 	# Start-ThreadJob { 
@@ -141,7 +145,7 @@ $azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
 $dotFileRefreshService = Start-ThreadJob {
-	Get-DotFiles
+	Get-DotFiles -source $using:source -profilePath $using:PROFILE
 } -Name "Dotfiles Service"
 
 function mail { 
@@ -183,7 +187,7 @@ function Build-Prompt {
 		("⌚"),
 		(times),
 		# "`n",
-		($newDotFile ? "new Dotfile!" : "")
+		($newDotFile ? "new Dotfile!" : $null)
 		(git symbolic-ref --short HEAD),
 		("" + $subName),
 		("" +
@@ -194,7 +198,7 @@ function Build-Prompt {
 		$pwd.Path,
 		"> "
 	)) | Where-Object {
-		$null -ne $_
+		$null -ne $_ -and $false -ne $_
 	}|
 	Foreach-Object {
 		fancyNull $_
