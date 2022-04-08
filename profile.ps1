@@ -126,7 +126,7 @@ function prompt {
 	$str += ($jobs.length + "jobs/")
 	$str += $pwd.Path
 	$str += ">"
-	$jobs | Receive-Job -AutoRemoveJob -WriteEvents
+	$jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	$jobs += (Synchronize-Dotfiles)
 	$str
 }
