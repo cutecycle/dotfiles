@@ -46,7 +46,7 @@ $module = New-Module -Name Profile -ScriptBlock {
 				Write-Output "Change Detected!"
 				Remove-Item -Force $profilePath
 				Set-Content -Path $profilePath -Value $content -Force
-                
+
 			}
 		}
 	}
@@ -124,10 +124,10 @@ function prompt {
         (($_.status -eq "Completed") ? "✅": "♻️")
 	}
 	$str += ($jobs.length + "jobs/")
-	$str += $pwd
+	$str += $pwd.Path
 	$str += ">"
-	$str
 	$jobs | Receive-Job -AutoRemoveJob -WriteEvents
 	$jobs += (Synchronize-Dotfiles)
+	$str
 }
 
