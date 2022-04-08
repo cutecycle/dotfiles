@@ -148,6 +148,7 @@ function prompt {
 	# $jobs += (Get-Dotfiles)
 	# $jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
 	Get-Dotfiles
+	write-host "hello???"
 	Build-Prompt
 }
 
