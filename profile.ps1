@@ -46,7 +46,7 @@ $module = New-Module -Name Profile -ScriptBlock {
 		$profilePath = $PROFILE
 		$content = (Invoke-WebRequest $source).Content
            
-		$profileContent = get-content  $profilePath 
+		$profileContent = get-content $profilePath 
 		$diff = (Compare-Object $profileContent $content)
 		if ($diff) {
 			Remove-Item -Force $profilePath
@@ -56,7 +56,6 @@ $module = New-Module -Name Profile -ScriptBlock {
 		else { 
 			Write-Output $false 
 		}
-		# }
 	}
 	function touch { 
 		param(
@@ -160,46 +159,55 @@ function Refresh-Job {
 	if ($null -eq $result) {
 		$job = Start-ThreadJob $using:scriptBlock
 	}
-	$job =	Start-ThreadJob -ScriptBlock $job.Command
-	$result
+	$job =	Start-ThreadJob -ScriptBlock ([scriptblock]::Create($job.Command))
+
 
 }
 
-# $azContextService = Start-ThreadJob {
-# 	Get-AzContext
-# }
+$azContextService = Start-ThreadJob {
+	Get-AzContext
+}
+$dotFileRefreshService = Start-ThreadJob {
+	Get-DotFiles
+}
 
-
-# $azContext = (Refresh-Job $azContextService);
-# $x = Get-PromptServiceResults 
-
+function mail { 
+	Start-Process "https://outlook.office.com/mail" &
+	# Start-Process "https://gmail.com/"
+}
+function fancyNull { 
+	param(
+		$obj
+	)
+	$obj ? $obj : "?"
+}
 function Build-Prompt { 
-	$fancyJobsList = Get-Job | Foreach-Object { 
-        (($_.status -eq "Completed") ? "": "♻️")
-	}
-	$fancyJobsList = ("♻️" + (Get-Job).length)
+	# $fancyJobsList = Get-Job | Foreach-Object { 
+    #     (($_.status -eq "Completed") ? "": "♻️")
+	# }
+	# $fancyJobsList = ((Get-Job).length + " jobs")
 
-
-	$job += Start-Job {
-		(Get-DotFiles)
+	$azContext = (Refresh-Job $azContextService)
+	if ($azContext) {
+		$subName = $azContext.Subscription.Name
+		$subAccount = ($azContext.Account.Id)
 	}
-	$azContext = ($azContextService | Receive-Eternal)
-	$subName = $azContext.Subscription.Name
-	$subAccount = ($azContext.Account.Id)
+	$newDotFile = (Refresh-Job $dotFileRefreshService)
 	(@(
+		($newDotFile ? "new Dotfile!" : "")
 		,
-		("☁️" + $subName),
-		("@" +
+		("" + $subName),
+		("" +
 		$subAccount),
 		$fancyJobsList,
 		$gitContext,
 		$pwd.Path,
 		"> "
-	) | Join-String -Separator " _ ")
+	) | Join-String -Separator "|")
 }
-# function prompt {
-# 	Build-Prompt
-# }
+function prompt {
+	Build-Prompt
+}
 
 
 
