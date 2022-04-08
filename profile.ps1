@@ -1,5 +1,15 @@
-$exceptions = "Teams", "powershell", "vscode", "OUTLOOK","iCUE", "Stage"
+$exceptions = "Teams","iCUE"
 
+
+(@(&"~/AppData/Local/Programs/oh-my-posh/bin/oh-my-posh.exe" init powershell --config="~/Local\oh-my-posh\7.59.6.omp.json" --print) -join "`n") | Invoke-Expression
+
+function touch { 
+	param(
+		$file
+	)
+	echo $null  >> $file
+}
+$env:PATH += ";~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts"
 function endit {
     $parent = (gwmi win32_process | ? processid -eq  $PID).parentprocessid
     $procs = (Get-Process | Where-Object { $_.MainWindowTitle -ne "" } | Where-Object { $_.Pid -ne $PID } | Where-Object { $_.Id -ne $parent } | Where-Object { $_.ProcessName -NotIn $exceptions })
