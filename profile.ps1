@@ -61,10 +61,10 @@ function k {
         [Parameter(Position = 0)]
         $name
     )
-    $parent = (gwmi win32_process | ? processid -eq  $PID).parentprocessid
-    $procs = (Get-Process | Where-Object { $_.MainWindowTitle -like "*$name*" -or $_.ProcessName -like "*$name*" } | Where-Object { $_.MainWindowTitle -ne "" } | Where-Object { $_.Pid -ne $PID } | Where-Object { $_.Id -ne $parent } | Where-Object { $_.ProcessName -NotIn $exceptions })
-    $procs
-    Stop-Process $procs -ErrorAction SilentlyContinue
+    $procs = (Get-Process | Where-Object { $_.MainWindowTitle -like "*$name*" -or $_.ProcessName -like "*$name*" })
+    $procs | Foreach-object -Parallel { 
+        Stop-process $_ -ErrorAction "SilentlyContinue"
+    }
 }
 
 function cpu { 
@@ -89,7 +89,7 @@ function Find-AzPortal {
     $url = "https://$($azContext.Environment.ManagementPortalUrl)/#$(($azContext).Tenant.Id))/resource"
     $resources = (Get-AzResource -Name *$name*)[0..5]
     $resources | ForEach-Object { 
-        $url + $resource.ResourceId
+        ($url + $resource.ResourceId)
     }
     | ForEach-Object -Parallel { 
         Start-Process $_
