@@ -42,7 +42,7 @@ function Synchronize-Dotfiles {
              Set-Content -Path $PROFILE -Value $content -Force
            
             $profileContent= get-content  $PROFILE 
-            $diff=(diff $profileContent $content)
+            $diff=(diff $profileContent $content -ExcludeEqual)
             if($diff) {
                 Write-Output "Change Detected!"
                 Write-Output $diff
@@ -122,6 +122,7 @@ function prompt {
     $str = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
     }
+    $str += $pwd
     $str += ">"
     $str
     $jobs += (Synchronize-Dotfiles)
