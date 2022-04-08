@@ -125,6 +125,7 @@ function prompt {
     $str = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
     }
+    $str += ">"
 $jobs | Receive-Job 
 $str
 }
