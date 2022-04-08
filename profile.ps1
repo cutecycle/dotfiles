@@ -122,9 +122,10 @@ function prompt {
     $str = $jobs | Foreach-Object { 
         (($_.status -eq "Completed") ? "✅": "♻️")
     }
+    $str += ($jobs.length + "jobs/")
     $str += $pwd
     $str += ">"
     $str
+    $jobs | Receive-Job -AutoRemoveJob -WriteEvents
     $jobs += (Synchronize-Dotfiles)
-    $jobs | Receive-Job 
 }
