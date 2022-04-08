@@ -36,13 +36,13 @@ function Synchronize-Dotfiles {
     
     Start-ThreadJob { 
         $source = $using:source
-        $content = (Invoke-WebRequest $source).Content
         $PROFILE = $using:PROFILE
+        $content = (Invoke-WebRequest $source).Content
         $start = Get-Date
-            $content | Set-Content -Path $PROFILE -Force
+             Set-Content -Path $PROFILE -Value $content -Force
            
             $profileContent= get-content  $PROFILE 
-            $diff=diff $profileContent $content
+            $diff=(diff $profileContent $content)
             if($diff) {
                 Write-Output "Change Detected!"
                 Write-Output $diff
@@ -123,9 +123,7 @@ function prompt {
         (($_.status -eq "Completed") ? "✅": "♻️")
     }
     $str += ">"
-$str
-    $jobs += @(
-        (Synchronize-Dotfiles)
-    )
-$jobs | Receive-Job 
+    $str
+    $jobs += (Synchronize-Dotfiles)
+    $jobs | Receive-Job 
 }
