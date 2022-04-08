@@ -128,32 +128,78 @@ $extras = @(
 $env:PATH += ($extras | Join-String)
 $jobs = @()
 
-function Build-Prompt { 
-	$fancyJobsList = $jobs | Foreach-Object { 
-        (($_.status -eq "Completed") ? "✅": "♻️")
+$jobStore = @{
+
+}
+# function Sync-Job { 
+# 	param(
+# 		$scriptblock,
+# 		$originalVariable
+# 	)
+
+# 	$result = (Receive-Job $job)
+# 	$jobstore[$scriptblock] = $result
+# 	if ($null -ne $result) {
+# 		Start-ThreadJob $
+# 	}
+	
+
+# 	(
+# 		($null -eq $result) ? 
+# 		$originalVariable :
+# 		$job
+# 	)
+# }
+function Refresh-Job { 
+	param(
+		$job
+	) 
+
+	$result = $job | Receive-job -Keep 
+	$result
+	if ($null -eq $result) {
+		$job = Start-ThreadJob $using:scriptBlock
 	}
-	$azContext = (Get-AzContext)
-	$subName = ($azContext.Subscription.Name)
+	$job =	Start-ThreadJob -ScriptBlock $job.Command
+	$result
+
+}
+
+# $azContextService = Start-ThreadJob {
+# 	Get-AzContext
+# }
+
+
+# $azContext = (Refresh-Job $azContextService);
+# $x = Get-PromptServiceResults 
+
+function Build-Prompt { 
+	$fancyJobsList = Get-Job | Foreach-Object { 
+        (($_.status -eq "Completed") ? "": "♻️")
+	}
+	$fancyJobsList = ("♻️" + (Get-Job).length)
+
+
+	$job += Start-Job {
+		(Get-DotFiles)
+	}
+	$azContext = ($azContextService | Receive-Eternal)
+	$subName = $azContext.Subscription.Name
 	$subAccount = ($azContext.Account.Id)
 	(@(
-		"☁️",
-		$subName,
-		"����",
-		$subAccount,
+		,
+		("☁️" + $subName),
+		("@" +
+		$subAccount),
 		$fancyJobsList,
 		$gitContext,
 		$pwd.Path,
 		"➡️ "
-	) | Join-String -Separator " /")
+	) | Join-String -Separator " _ ")
 }
-function prompt {
-	# $jobs += (Get-Dotfiles)
-	# $jobs | Receive-Job -AutoRemoveJob -WriteEvents -Wait
-	Get-Dotfiles
-	write-host "hello???"
-	Build-Prompt
-}
+# function prompt {
+# 	Build-Prompt
+# }
 
 
 
-\
