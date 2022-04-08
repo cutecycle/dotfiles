@@ -10,7 +10,7 @@ function Cache-Command {
     )
     $commandString = $command.ToString()
     $mystream = [IO.MemoryStream]::new([byte[]][char[]]$commandString)
-    $commandHash = Get-FileHash -InputStream $mystream -Algorithm SHA256
+    $commandHash = (Get-FileHash -InputStream $mystream -Algorithm SHA256).Hash
     $target = "~/.cache/$commandHash"
     try {
         $stale = (Get-Item -Path $target).CreationTime -gt (Get-Date).AddDays(-1)
