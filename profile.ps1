@@ -9,6 +9,7 @@ function g {
 $lights = 1
 function lights { 
 	$lights = [Int32](-not $lights)
+	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
 	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $lights
 }
 # Set-PoshPrompt -theme M365Princess
@@ -167,7 +168,7 @@ function Build-Prompt {
 		$subName = $azContext.Subscription.Name
 		$subAccount = ($azContext.Account.Id)
 	}
-	$newDotFile = (Refresh-Job $dotFileRefreshService)
+	# $newDotFile = (Refresh-Job $dotFileRefreshService)
 	(@(
 		("⌚"),
 		(times),
@@ -186,6 +187,6 @@ function Build-Prompt {
 		fancyNull $_
 	} | Join-String -Separator " / " -OutputSuffix "> "
 }
-function prompt {
-	Build-Prompt
-}
+# function prompt {
+# 	Build-Prompt
+# }
