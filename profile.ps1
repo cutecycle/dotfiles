@@ -199,14 +199,13 @@ function Build-Prompt {
 		# $fancyJobsList,
 		$gitContext,
 		# "`n"
-		$pwd.Path,
-		"> "
+		$pwd.Path
 	)) | Where-Object {
 		$null -ne $_ -and $false -ne $_
 	} |
 	Foreach-Object {
 		fancyNull $_
-	} | Join-String -Separator " / "
+	} | Join-String -Separator " / " -OutputSuffix "> "
 }
 # $time = (New-TimeSpan -Start $start -end $end).Seconds
 # Write-Host "Profile read in $($time) Seconds"
