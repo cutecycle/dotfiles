@@ -170,40 +170,40 @@ function Build-Prompt {
 	param(
 		[DateTime]$then
 	)
-	try { 
-		$azContext = (Refresh-Job $azContextService)
-		if ($azContext) {
-			$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
-			$subAccount = ($azContext.Account.Id)
-		}
-		# $newDotFile = (Refresh-Job $dotFileRefreshService)
-		$final = (
+	$azContext = (Refresh-Job $azContextService)
+	if ($azContext) {
+		$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
+		$subAccount = ($azContext.Account.Id)
+	}
+	# $newDotFile = (Refresh-Job $dotFileRefreshService)
+	$final = (
+		(
 			(
-				(
-					@(
+				@(
 						((times) | ForEach-Object { ("⌚" + $_) }),
 						($newDotFile ? "new Dotfile!" : $null)
 						(git symbolic-ref --short HEAD),
 						("" + $subName),
 						("" + $subAccount),
-						$fancyJobsList,
-						$gitContext,
-						$pwd.Path,
+					$fancyJobsList,
+					$gitContext,
+					$pwd.Path,
 						(Nice-Time -then $then)
-					)) | Where-Object {
-					$null -ne $_ -and $false -ne $_
-				} |
-				Foreach-Object {
-					fancyNull $_
-				} | Join-String -Separator " / " -OutputSuffix "> "
-			) 
-		)
-		$final 
+				)) | Where-Object {
+				$null -ne $_ -and $false -ne $_
+			} |
+			Foreach-Object {
+				fancyNull $_
+			} | Join-String -Separator " / " -OutputSuffix "> "
+		) 
+	)
+	$final 
+}
+function prompt {
+	try { 
+		Build-Prompt -then (get-date)
 	}
 	catch { 
 		( $_.Exception.Message + "> ")
-	}
+	} 
 }
-# function prompt {
-# 	Build-Prompt -then (get-date)
-# }
