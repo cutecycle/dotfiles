@@ -222,27 +222,21 @@ function Build-Prompt {
 		[DateTime]$then
 	)
 	$newDotFile = (Refresh-Job $dotFileRefreshService)
-	$final = (
-		(
-			(
-				@(
-					((times) | ForEach-Object { ("⌚" + $_) }),
-					($newDotFile ? "new Dotfile!" : $null),
-					(git symbolic-ref --short HEAD),
-					(AzDetails),
-					$fancyJobsList,
-					$gitContext,
-					$pwd.Path
-					# (Nice-Time -then $then)
-				)) | Where-Object {
-				$null -ne $_ -and $false -ne $_
-			} 
-			| trunc 
-			| fancyNull 
-			| Join-String -Separator " / " -OutputSuffix "> "
-		) 
-	)
-	$final 
+	@(
+		((times) | ForEach-Object { ("⌚" + $_) }),
+		($newDotFile ? "new Dotfile!" : $null),
+		(git symbolic-ref --short HEAD),
+		(AzDetails),
+		$fancyJobsList,
+		$gitContext,
+		$pwd.Path
+	) 
+	| Where-Object {
+		$null -ne $_ -and $false -ne $_
+	}
+	| trunc 
+	| fancyNull 
+	| Join-String -Separator " / " -OutputSuffix "> "
 }
 function prompt {
 	try { 
