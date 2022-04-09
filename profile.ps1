@@ -169,23 +169,25 @@ function Build-Prompt {
 		$subAccount = ($azContext.Account.Id)
 	}
 	# $newDotFile = (Refresh-Job $dotFileRefreshService)
-	(@(
-		("⌚"),
-		(times),
-		($newDotFile ? "new Dotfile!" : $null)
-		(git symbolic-ref --short HEAD),
-		("" + $subName),
-		("" +
-		$subAccount),
-		$fancyJobsList,
-		$gitContext,
-		$pwd.Path
-	)) | Where-Object {
-		$null -ne $_ -and $false -ne $_
-	} |
-	Foreach-Object {
-		fancyNull $_
-	} | Join-String -Separator " / " -OutputSuffix "> "
+	(
+		(
+			@(
+				(times) | ForEach-Object { ("⌚" + $_) },
+				($newDotFile ? "new Dotfile!" : $null)
+				(git symbolic-ref --short HEAD),
+				("" + $subName),
+				("" +
+				$subAccount),
+				$fancyJobsList,
+				$gitContext,
+				$pwd.Path
+			)) | Where-Object {
+			$null -ne $_ -and $false -ne $_
+		} |
+		Foreach-Object {
+			fancyNull $_
+		} | Join-String -Separator " / " -OutputSuffix "> "
+	)
 }
 function prompt {
 	Build-Prompt
