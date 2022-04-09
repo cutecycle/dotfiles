@@ -229,7 +229,7 @@ function prompt {
 		Build-Prompt -then (get-date)
 	}
 	catch { 
-		( $_.Exception.Message + "> ")
+		( "❌" + $_.Exception.Message + "> ")
 	} 
 }
 
