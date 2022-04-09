@@ -167,26 +167,21 @@ function mail {
 	Start-Process "https://outlook.office.com/mail" &
 }
 function fancyNull { 
-	param(
-		[Parameter(ValueFromPipeline = $true)]
-		$obj
-	)
-	($null -eq $obj) ? "?" : $obj
+	($null -eq $args[0]) ? "?" : $args[0]
 }
 
 function trunc { 
-	param ( 
-		[Parameter(ValueFromPipeline = $true)]
-		$list
-	)
-	$list | ForEach-Object { 
-		($_.length -gt 10) ? $_ :
-		(
-			$_.Substring(
-				0,
-				10
-			) + "…"
-		)
+	[string[]] $args[0] | ForEach-Object { 
+		$max = $_.length
+		$intented = 10
+		$_.Substring(
+			0,
+			(
+				#dammit i know there's something better than this out there
+				$_.Length -lt $intented ? $_.Length : $intented
+			)
+
+		) + "…"
 	}
 }
 function times { 
@@ -230,11 +225,7 @@ function AzDetails {
 	}
 }
 function trim { 
-	param(
-		[Parameter(ValueFromPipeline = $true)]
-		$list
-	)
-	$list | Where-Object {
+	$args[0] | Where-Object {
 		($null -ne $_)
 	}
 }
@@ -243,19 +234,11 @@ function gitString {
 	git symbolic-ref --short HEAD
 }
 function dotfileString { 
-	param(
-		[Parameter(ValueFromPipeline = $true)]
-		$list
-	)
 	$list ? "new Dotfile!" : $null
 }
 function timeString { 
-	param(
-		[Parameter(ValueFromPipeline = $true)]
-		$list
-	)
-	$list | ForEach-Object { 
-			("⌚" + $_) 
+	$args[0] | ForEach-Object { 
+		("⌚" + $_) 
 	}
 }
 
@@ -275,18 +258,17 @@ function promptList {
 	) 
 }
 function Build-Prompt { 
-	(promptList
-	| trim
-	| trunc 
-	| fancyNull 
-	| Join-String -Separator " / " -OutputSuffix "> ")
+	(
+		(trunc (fancynull (trim (promptList))))
+		| Join-String -Separator " / " -OutputSuffix "> "
+	)
 }
-# function prompt {
-# 	try { 
-# 		Build-Prompt
-# 	}
-# 	catch { 
-# 		( "❌" + $_.Exception.Message + "> ")
-# 	} 
-# }
+function prompt {
+	try { 
+		Build-Prompt
+	}
+	catch { 
+		( "❌" + $_.Exception.Message + "> ")
+	} 
+}
 # (Get-Dotfiles | Out-Null)
