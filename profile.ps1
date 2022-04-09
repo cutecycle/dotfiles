@@ -10,7 +10,9 @@ $lights = 1
 function lights { 
 	$lights = [Int32](-not $lights)
 	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
-	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $lights
+	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $lights &
+
+	Write-Host $msg
 }
 # Set-PoshPrompt -theme M365Princess
 function Get-Dotfiles {
@@ -18,11 +20,6 @@ function Get-Dotfiles {
 		$source = $source,
 		$profilePath = $PROFILE
 	)
-	# Stay unidirectional. only edit in codespaces
-    
-	# Start-ThreadJob { 
-	# $source = $using:source
-	# $profilePath = $using:PROFILE
 	$content = (Invoke-WebRequest $source).Content
 	if ((Test-Path $profilePath)) { 
 		$profileContent = (Get-Content $profilePath)
@@ -119,7 +116,7 @@ function Refresh-Job {
 	$result = $job | Receive-job -Keep 
 
 	Write-Information ("Background service $name $($job.State): $result")
-	
+	$job | Remove-Job -Force
 	$job =	Start-ThreadJob -Name $job.Name -ScriptBlock ([scriptblock]::Create($job.Command)) 
 	$result
 }
@@ -160,36 +157,54 @@ function times {
 	}
 }
 function i { 
-	install-module $_  -Scope CurrentUser -Force &
+	install-module $_  -Scope CurrentUser -Force -AllowClobber &
+}
+function Nice-Time { 
+	param(
+		$then
+	)
+	$span = New-TimeSpan -Start $then -end (Get-Date)
+	"$($span.Milliseconds)ms"
 }
 function Build-Prompt { 
-	$azContext = (Refresh-Job $azContextService)
-	if ($azContext) {
-		$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
-		$subAccount = ($azContext.Account.Id)
-	}
-	# $newDotFile = (Refresh-Job $dotFileRefreshService)
-	(
-		(
-			@(
-				(times) | ForEach-Object { ("⌚" + $_) },
-				($newDotFile ? "new Dotfile!" : $null)
-				(git symbolic-ref --short HEAD),
-				("" + $subName),
-				("" +
-				$subAccount),
-				$fancyJobsList,
-				$gitContext,
-				$pwd.Path
-			)) | Where-Object {
-			$null -ne $_ -and $false -ne $_
-		} |
-		Foreach-Object {
-			fancyNull $_
-		} | Join-String -Separator " / " -OutputSuffix "> "
+	param(
+		[DateTime]$then
 	)
+	try { 
+		$azContext = (Refresh-Job $azContextService)
+		if ($azContext) {
+			$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
+			$subAccount = ($azContext.Account.Id)
+		}
+		# $newDotFile = (Refresh-Job $dotFileRefreshService)
+		$final = (
+			(
+				(
+					@(
+						((times) | ForEach-Object { ("⌚" + $_) }),
+						($newDotFile ? "new Dotfile!" : $null)
+						(git symbolic-ref --short HEAD),
+						("" + $subName),
+						("" + $subAccount),
+						$fancyJobsList,
+						$gitContext,
+						$pwd.Path,
+						(Nice-Time -then $then)
+					)) | Where-Object {
+					$null -ne $_ -and $false -ne $_
+				} |
+				Foreach-Object {
+					fancyNull $_
+				} | Join-String -Separator " / " -OutputSuffix "> "
+			) 
+		)
+		$final 
+	}
+	catch { 
+		( $_.Exception.StackTrace. + $_.Exception.Message + "> ")
+		Get-Job | Remove-Job
+	}
 }
 function prompt {
-	Build-Prompt
+	Build-Prompt -then (get-date)
 }
-
