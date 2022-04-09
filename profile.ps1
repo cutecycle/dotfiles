@@ -199,7 +199,7 @@ function working {
 			-and `
 			[DateTime]$args[0].Hour -lt 17 `
 			-and `
-			[DateTime]$args[0].DayOfWeek -notin @("Saturday", "Sunday") 
+		([DateTime]$args[0].DayOfWeek -notin @("Saturday", "Sunday") )
 	)
 }
 function times { 
