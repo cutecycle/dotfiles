@@ -149,7 +149,6 @@ $azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
 $dotFileRefreshService = Start-ThreadJob {
-	
 	& ${using:function:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
 } -Name "Dotfiles Service"
 
