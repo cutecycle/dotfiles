@@ -254,7 +254,7 @@ function nicePwd {
 function promptList {
 	@(
 		(timeString (times))
-		(dotfileString (Refresh-Job $dotFileRefreshService)),
+		# (dotfileString (Refresh-Job $dotFileRefreshService)),
 		(gitString)
 		(AzDetails),
 		(nicePwd)
@@ -275,3 +275,4 @@ function prompt {
 		( "❌" + $_.Exception.Message + "> ")
 	} 
 }
+(Get-Dotfiles | Out-Null) & 
