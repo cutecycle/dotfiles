@@ -188,8 +188,14 @@ function trunc {
 		) + ($short ? "" :  "…" )
 	}
 }
+function working { 
+	[DateTime]$args[0].Hour -gt 8 
+	-and 
+	[DateTime]$args[0].Hour -lt 17
+
+}
 function times { 
-	$working = ((get-date).Hour -lt 17)
+	$working = (working (Get-Date))
 	$relevantTimes = @(
 		"Eastern Standard Time"
 	)
