@@ -169,19 +169,22 @@ function mail {
 function fancyNull { 
 	($null -eq $args[0]) ? "?" : $args[0]
 }
+function wl { 
+	Start-Process "https://www.youtube.com/playlist?list=WL"
+}
 
 function trunc { 
 	[string[]] $args[0] | ForEach-Object { 
 		$max = $_.length
-		$intented = 10
+		$intended = 15
 		$_.Substring(
 			0,
 			(
 				#dammit i know there's something better than this out there
-				$_.Length -lt $intented ? $_.Length : $intented
+				$_.Length -lt $intended ? $_.Length : ($intended + "…")
 			)
 
-		) + "…"
+		)
 	}
 }
 function times { 
