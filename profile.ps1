@@ -187,6 +187,6 @@ function Build-Prompt {
 		fancyNull $_
 	} | Join-String -Separator " / " -OutputSuffix "> "
 }
-# function prompt {
-# 	Build-Prompt
-# }
+function prompt {
+	Build-Prompt
+}
