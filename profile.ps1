@@ -46,7 +46,6 @@ function Get-Dotfiles {
 	$content = (Invoke-WebRequest $source).Content
 	$profileContent = get-content $profilePath 
 
-
 	Write-Information ("ProfilePath:" + $profilePath)
 	Write-Information $content
 	Write-Information $profileContent
@@ -131,20 +130,21 @@ function Refresh-Job {
 	param(
 		$job
 	) 
-
 	$name = ($job.name)
 	$result = $job | Receive-job -Keep 
-	$result
-	Write-Information ("Background service $name $($job.State): $result")
-	$job =	Start-ThreadJob -Name $job.Name -ScriptBlock ([scriptblock]::Create($job.Command))
 
+	Write-Information ("Background service $name $($job.State): $result")
+	
+	$job =	Start-ThreadJob -Name $job.Name -ScriptBlock ([scriptblock]::Create($job.Command)) 
+	$result
 }
 
 $azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
 $dotFileRefreshService = Start-ThreadJob {
-	Get-DotFiles -source $using:source -profilePath $using:PROFILE
+	
+	& ${using:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
 } -Name "Dotfiles Service"
 
 function mail { 
