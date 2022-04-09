@@ -147,9 +147,9 @@ $dotFileRefreshService = Start-ThreadJob {
 		Remove-Item -Path $profilePath
 		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
-		Write-Information $diff
+		Write-Information ($diff | Out-String)
 	}
-	$diff
+	($null -eq $diff)
 } -Name "Dotfiles Service"
 
 function mail { 
@@ -163,9 +163,13 @@ function fancyNull {
 }
 
 function trunc { 
-	$_ | ForEach-Object { 
+	param ( 
+		[Parameter(ValueFromPipeline = $true)]
+		$list
+	)
+	$list | ForEach-Object { 
 		(
-			$_.Subtring(
+			$_.Substring(
 				0,
 				5 % $_.length
 			) + "…"
@@ -204,15 +208,19 @@ function Nice-Time {
 
 	"$($span.Milliseconds)ms"
 }
+function AzDetails { 
+	$azContext = (Refresh-Job $azContextService)
+	if ($azContext) {
+		@(
+			($azContext.Subscription.Name),
+			($azContext.Account.Id)
+		)
+	}
+}
 function Build-Prompt { 
 	param(
 		[DateTime]$then
 	)
-	$azContext = (Refresh-Job $azContextService)
-	if ($azContext) {
-		$subName = $azContext.Subscription.Name
-		$subAccount = ($azContext.Account.Id)
-	}
 	$newDotFile = (Refresh-Job $dotFileRefreshService)
 	$final = (
 		(
@@ -221,18 +229,17 @@ function Build-Prompt {
 					((times) | ForEach-Object { ("⌚" + $_) }),
 					($newDotFile ? "new Dotfile!" : $null),
 					(git symbolic-ref --short HEAD),
-					("" + $subName),
-					("" + $subAccount),
+					(AzDetails),
 					$fancyJobsList,
 					$gitContext,
 					$pwd.Path
 					# (Nice-Time -then $then)
 				)) | Where-Object {
 				$null -ne $_ -and $false -ne $_
-			} |
-			Foreach-Object {
-				fancyNull $_
-			} | Join-String -Separator " / " -OutputSuffix "> "
+			} 
+			| trunc 
+			| fancyNull 
+			| Join-String -Separator " / " -OutputSuffix "> "
 		) 
 	)
 	$final 
