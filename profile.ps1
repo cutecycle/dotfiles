@@ -111,11 +111,11 @@ function Refresh-Job {
 	$result
 }
 
-$azContextService = Start-ThreadJob {
+$global:azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
 
-$dotFileRefreshService = Start-ThreadJob {
+$global:dotFileRefreshService = Start-ThreadJob {
 	$profilePath = $using:PROFILE
 	$source = $using:source
 
@@ -134,7 +134,6 @@ $dotFileRefreshService = Start-ThreadJob {
 	$diff = (Compare-Object $profileContent $content)
 	Set-Content -Path $profilePath -Value $content -Force
 	if ($diff) {
-		Remove-Item -Path $profilePath
 		Write-Information "diff detected."
 		Write-Information ($diff | Out-String)
 	}
@@ -166,17 +165,23 @@ function trunc {
 		) + ($short ? "" :  "…" )
 	}
 }
-function working { 
-	(
-		[DateTime]$args[0].Hour -gt 8 `
-			-and `
-			[DateTime]$args[0].Hour -lt 17 `
-			-and `
-		([DateTime]$args[0].DayOfWeek -notin @("Saturday", "Sunday") )
-	)
+function Test-Perf { 
+	Measure-Command { 
+	(22 / 7) | Set-COntent -path (New-TemporaryFile)
+	}
+}
+function Test-Hours { 
+	$sleeping = ([DateTime]$args[0].Hour -gt 8) 
+	$afterhours = ([DateTime]$args[0].Hour -lt 17) 
+	$weekend = ([DateTime]$args[0].DayOfWeek -in @("Saturday", "Sunday") )
+	Write-Information (Get-Variable notearly | out-string)
+	Write-Information (Get-Variable notlate | out-string)
+	Write-Information (Get-Variable notweekend | out-string)
+
+	(-not $sleeping -and -not $afterhours -and $weekend)
 }
 function times { 
-	$working = (working (Get-Date))
+	$working = (Test-Hours (Get-Date))
 	$relevantTimes = @(
 		"Eastern Standard Time"
 	)
@@ -207,7 +212,7 @@ function Nice-Time {
 	"$($span.Milliseconds)ms"
 }
 function AzDetails { 
-	$azContext = (Refresh-Job $azContextService)
+	$azContext = (Refresh-Job $global:azContextService)
 	if ($azContext) {
 		@(
 			($azContext.Subscription.Name),
@@ -225,7 +230,8 @@ function gitString {
 	git symbolic-ref --short HEAD
 }
 function dotfileString { 
-	$list ? "new dotfile!" : $null
+	$newFile = (Refresh-Job $global:dotFileRefreshService)	
+	$newFile ? "new dotfile!" : $null
 }
 function timeString { 
 	$args[0] | ForEach-Object { 
@@ -242,7 +248,7 @@ function gitUpdated {
 function promptList {
 	@(
 		(timeString (times))
-		(dotfileString (Refresh-Job $dotFileRefreshService)),
+		(dotfileString (Refresh-Job $global:dotFileRefreshService)),
 		(gitString)
 		(AzDetails),
 		"`n",
