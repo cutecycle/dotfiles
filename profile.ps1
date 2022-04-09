@@ -44,9 +44,9 @@ function Get-Dotfiles {
 	Write-Information $content
 	Write-Information $profileContent
            
+	Set-Content -Path $profilePath -Value $content -Force
 	$diff = (Compare-Object $profileContent $content)
 	if ($diff) {
-		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
 		$diff | Out-String | Write-Information
 	}
