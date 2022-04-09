@@ -246,7 +246,7 @@ function gitString {
 	git symbolic-ref --short HEAD
 }
 function dotfileString { 
-	$list ? "new Dotfile!" : $null
+	$list ? "new dotfile!" : $null
 }
 function timeString { 
 	$args[0] | ForEach-Object { 
@@ -266,6 +266,7 @@ function promptList {
 		(dotfileString (Refresh-Job $dotFileRefreshService)),
 		(gitString)
 		(AzDetails),
+		"`n",
 		(nicePwd)
 	) 
 }
