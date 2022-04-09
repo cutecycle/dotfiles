@@ -36,8 +36,8 @@ function Cache-Command {
 }
 function Get-Dotfiles {
 	param(
-		$source=$source,
-		$profilePath=$PROFILE
+		$source = $source,
+		$profilePath = $PROFILE
 	)
 	# Stay unidirectional. only edit in codespaces
     
@@ -163,10 +163,10 @@ function times {
 	$relevantTimes = @(
 		"Eastern Standard Time"
 	)
-	if($working) { 
+	if ($working) { 
 		$relevantTimes += @(
 			"Pacific Standard Time",
-		"UTC")
+			"UTC")
 
 	}
 	$relevantTimes | Foreach-Object {
@@ -212,13 +212,6 @@ function Build-Prompt {
 		fancyNull $_
 	} | Join-String -Separator " / " -OutputSuffix "> "
 }
-# $time = (New-TimeSpan -Start $start -end $end).Seconds
-# Write-Host "Profile read in $($time) Seconds"
 function prompt {
 	Build-Prompt
 }
-prompt
-
-
-
-
