@@ -263,7 +263,7 @@ function gitUpdated {
 function promptList {
 	@(
 		(timeString (times))
-		# (dotfileString (Refresh-Job $dotFileRefreshService)),
+		(dotfileString (Refresh-Job $dotFileRefreshService)),
 		(gitString)
 		(AzDetails),
 		(nicePwd)
