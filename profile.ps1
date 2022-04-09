@@ -174,7 +174,6 @@ function trunc {
 				5 % $_.length
 			) + "…"
 		)
-
 	}
 }
 function times { 
@@ -217,24 +216,38 @@ function AzDetails {
 		)
 	}
 }
-function Build-Prompt { 
-	param(
-		[DateTime]$then
-	)
-	$newDotFile = (Refresh-Job $dotFileRefreshService)
-	(
-		@(
-		((times) | ForEach-Object { ("⌚" + $_) }),
-		($newDotFile ? "new Dotfile!" : $null),
-		(git symbolic-ref --short HEAD),
+function trim { 
+	Where-Object {
+		$null -ne $_ -and $false -ne $_
+	}
+}
+
+function gitString {
+	git symbolic-ref --short HEAD
+}
+function dotfileString { 
+	
+	$_ ? "new Dotfile!" : $null
+}
+function timeString { 
+	$_ | ForEach-Object { ("⌚" + $_) }
+}
+function nicePwd { 
+	$pwd.Path
+}
+function promptList {
+	@(
+		(timeString (times)),
+		(dotfileString (Refresh-Job $dotFileRefreshService)),
+		(gitString),
 		(AzDetails),
-			$fancyJobsList,
-			$gitContext,
-			$pwd.Path
-		) 
-		| Where-Object {
-			$null -ne $_ -and $false -ne $_
-		}
+		(nicePwd)
+	) 
+}
+function Build-Prompt { 
+	return (
+		promptList
+		| trim
 		| trunc 
 		| fancyNull 
 		| Join-String -Separator " / " -OutputSuffix "> "
@@ -242,7 +255,7 @@ function Build-Prompt {
 }
 function prompt {
 	try { 
-		Build-Prompt -then (get-date)
+		Build-Prompt
 	}
 	catch { 
 		( "❌" + $_.Exception.Message + "> ")
