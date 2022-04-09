@@ -45,7 +45,13 @@ function Get-Dotfiles {
 	# $source = $using:source
 	# $profilePath = $using:PROFILE
 	$content = (Invoke-WebRequest $source).Content
-	$profileContent = get-content $profilePath 
+	if ((Test-Path $profilePath)) { 
+		$profileContent = (Get-Content $profilePath)
+		Remove-Item -Force $profilePath
+	}
+	else { 
+		$profilePath = ""
+	}
 
 	Write-Information ("ProfilePath:" + $profilePath)
 	Write-Information $content
@@ -53,7 +59,6 @@ function Get-Dotfiles {
            
 	$diff = (Compare-Object $profileContent $content)
 	if ($diff) {
-		Remove-Item -Force $profilePath
 		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
 		$diff | Out-String | Write-Information
@@ -150,7 +155,6 @@ $dotFileRefreshService = Start-ThreadJob {
 
 function mail { 
 	Start-Process "https://outlook.office.com/mail" &
-	# Start-Process "https://gmail.com/"
 }
 function fancyNull { 
 	param(
@@ -166,8 +170,8 @@ function times {
 	if ($working) { 
 		$relevantTimes += @(
 			"Pacific Standard Time",
-			"UTC")
-
+			"UTC"
+		)
 	}
 	$relevantTimes | Foreach-Object {
 		(
@@ -181,11 +185,6 @@ function i {
 	install-module $_  -Scope CurrentUser -Force &
 }
 function Build-Prompt { 
-	# $fancyJobsList = Get-Job | Foreach-Object { 
-	#     (($_.status -eq "Completed") ? "": "♻️")
-	# }
-	# $fancyJobsList = ((Get-Job).length + " jobs")
-
 	$azContext = (Refresh-Job $azContextService)
 	if ($azContext) {
 		$subName = $azContext.Subscription.Name
@@ -195,15 +194,13 @@ function Build-Prompt {
 	(@(
 		("⌚"),
 		(times),
-		# "`n",
 		($newDotFile ? "new Dotfile!" : $null)
 		(git symbolic-ref --short HEAD),
 		("" + $subName),
 		("" +
 		$subAccount),
-		# $fancyJobsList,
+		$fancyJobsList,
 		$gitContext,
-		# "`n"
 		$pwd.Path
 	)) | Where-Object {
 		$null -ne $_ -and $false -ne $_
