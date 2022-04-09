@@ -144,8 +144,10 @@ $dotFileRefreshService = Start-ThreadJob {
            
 	$diff = (Compare-Object $profileContent $content)
 	if ($diff) {
+		Remove-Item -Path $profilePath
 		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
+		Write-Information $diff
 	}
 	$diff
 } -Name "Dotfiles Service"
