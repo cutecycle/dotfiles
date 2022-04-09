@@ -2,6 +2,7 @@ $start = (Get-Date)
 $exceptions = "Teams", "iCUE"
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 function g {
+	git pull
 	git add . 
 	git commit -m "wip"
 	git push
@@ -144,7 +145,7 @@ $azContextService = Start-ThreadJob {
 } -Name "Azure Context Service"
 $dotFileRefreshService = Start-ThreadJob {
 	
-	& ${using:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
+	& ${using:function:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
 } -Name "Dotfiles Service"
 
 function mail { 
