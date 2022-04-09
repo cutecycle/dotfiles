@@ -163,7 +163,9 @@ function Nice-Time {
 	param(
 		$then
 	)
+	Write-Host $then	
 	$span = New-TimeSpan -Start $then -end (Get-Date)
+
 	"$($span.Milliseconds)ms"
 }
 function Build-Prompt { 
@@ -187,8 +189,8 @@ function Build-Prompt {
 					("" + $subAccount),
 					$fancyJobsList,
 					$gitContext,
-					$pwd.Path,
-					(Nice-Time -then $then)
+					$pwd.Path
+					# (Nice-Time -then $then)
 				)) | Where-Object {
 				$null -ne $_ -and $false -ne $_
 			} |
