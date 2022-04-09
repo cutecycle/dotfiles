@@ -25,7 +25,7 @@ function Get-Dotfiles {
 	$content = (Invoke-WebRequest $source).Content
 	if ((Test-Path $profilePath)) { 
 		$profileContent = (Get-Content $profilePath)
-		Remove-Item -Force $profilePath
+		# Remove-Item -Force $profilePath
 	}
 	else { 
 		$profilePath = ""
