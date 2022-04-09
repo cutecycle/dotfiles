@@ -124,8 +124,31 @@ function Refresh-Job {
 $azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
+
 $dotFileRefreshService = Start-ThreadJob {
 	# & ${using:function:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
+	$profilePath = $using:PROFILE
+	$source = $using:source
+
+	$content = (Invoke-WebRequest $source).Content
+	if ((Test-Path $profilePath)) { 
+		$profileContent = (Get-Content $profilePath)
+	}
+	else { 
+		$profilePath = ""
+	}
+
+	Write-Information ("ProfilePath:" + $profilePath)
+	Write-Information $content
+	Write-Information $profileContent
+           
+	$diff = (Compare-Object $profileContent $content)
+	if ($diff) {
+		Set-Content -Path $profilePath -Value $content -Force
+		Write-Information "diff detected."
+		$diff | Out-String | Write-Information
+	}
+	Write-Output ($null -ne $diff)
 } -Name "Dotfiles Service"
 
 function mail { 
