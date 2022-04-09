@@ -1,5 +1,4 @@
-$start = (Get-Date)
-$exceptions = "Teams", "iCUE"
+# $exceptions = "Teams", "iCUE"
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 function g {
 	git pull
@@ -9,31 +8,6 @@ function g {
 }
 
 # Set-PoshPrompt -theme M365Princess
-function Cache-Command { 
-	param(
-		[Parameter(ValueFromPipeline = $true)]
-		$command
-	)
-	$commandString = $command.ToString()
-	$mystream = [IO.MemoryStream]::new([byte[]][char[]]$commandString)
-	$commandHash = (Get-FileHash -InputStream $mystream -Algorithm SHA256).Hash
-	$target = "~/.cache/$commandHash"
-	if (Test-Path $target) {
-		$fresh = (Get-Item -Path $target).CreationTime -lt (Get-Date).AddDays(-1) 
-	}
-	if (-not $fresh) {
-		$result = Invoke-Command $command -NoNewScope
-		Start-ThreadJob { 
-			$result = $using:result
-			$target = $using:target
-			Set-Content -Path $target -Value $result -Force
-		}
-	}
-	else { 
-		$result = Get-Content $target
-	}
-	$result
-}
 function Get-Dotfiles {
 	param(
 		$source = $source,
@@ -69,7 +43,7 @@ function touch {
 	param(
 		$file
 	)
-	echo $null  >> $file
+	Write-Output $null  >> $file
 }
 function endit {
 	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -ne "" })
