@@ -7,12 +7,23 @@ function g {
 	git push
 }
 $lights = 1
-function lights { 
-	$lights = [Int32](-not $lights)
-	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
-	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $lights &
+function Test-PerformanceConstraint { 
 
-	Write-Host $msg
+
+}
+function lights { 
+	$lights = [Int32](-not $global:lights)
+	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
+	@(
+		"AppsUseLightTheme",
+		"SystemUsesLightTheme"
+	) | Foreach-Object { 
+		Start-ThreadJob {
+			$lights = (Get-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_).($using:_)
+			Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_ -Value $using:lights
+		}
+	}
+	# Write-Host $msg
 }
 # Set-PoshPrompt -theme M365Princess
 function Get-Dotfiles {
@@ -224,7 +235,7 @@ function trim {
 		$list
 	)
 	$list | Where-Object {
-		$null -ne $_
+		($null -ne $_)
 	}
 }
 
@@ -251,6 +262,9 @@ function timeString {
 function nicePwd { 
 	$pwd.Path
 }
+function gitUpdated { 
+	(git diff --name-only) -and ($LASTEXITCODE -eq 0)
+}
 function promptList {
 	@(
 		(timeString (times))
@@ -267,12 +281,12 @@ function Build-Prompt {
 	| fancyNull 
 	| Join-String -Separator " / " -OutputSuffix "> ")
 }
-function prompt {
-	try { 
-		Build-Prompt
-	}
-	catch { 
-		( "❌" + $_.Exception.Message + "> ")
-	} 
-}
+# function prompt {
+# 	try { 
+# 		Build-Prompt
+# 	}
+# 	catch { 
+# 		( "❌" + $_.Exception.Message + "> ")
+# 	} 
+# }
 # (Get-Dotfiles | Out-Null)
