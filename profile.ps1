@@ -146,7 +146,7 @@ $dotFileRefreshService = Start-ThreadJob {
 	if ($diff) {
 		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
-		$diff | Out-String | Write-Information
+		# $diff | Out-String | Write-Information
 	}
 	Write-Output ($null -ne $diff)
 } -Name "Dotfiles Service"
@@ -159,6 +159,18 @@ function fancyNull {
 		$obj
 	)
 	($null -eq $obj) ? "?" : $obj
+}
+
+function trunc { 
+	$_ | ForEach-Object { 
+		(
+			$_.Subtring(
+				0,
+				5 % $_.length
+			) + "…"
+		)
+
+	}
 }
 function times { 
 	$working = ((get-date).Hour -lt 17)
