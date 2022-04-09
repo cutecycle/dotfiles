@@ -173,6 +173,9 @@ function times {
 		)
 	}
 }
+function i { 
+	install-module $_  -Scope CurrentUser -Force &
+}
 function Build-Prompt { 
 	# $fancyJobsList = Get-Job | Foreach-Object { 
 	#     (($_.status -eq "Completed") ? "": "♻️")
@@ -201,7 +204,7 @@ function Build-Prompt {
 		"> "
 	)) | Where-Object {
 		$null -ne $_ -and $false -ne $_
-	}|
+	} |
 	Foreach-Object {
 		fancyNull $_
 	} | Join-String -Separator " / "
