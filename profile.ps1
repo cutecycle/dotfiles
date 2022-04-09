@@ -180,15 +180,15 @@ function Build-Prompt {
 		(
 			(
 				@(
-						((times) | ForEach-Object { ("⌚" + $_) }),
-						($newDotFile ? "new Dotfile!" : $null)
-						(git symbolic-ref --short HEAD),
-						("" + $subName),
-						("" + $subAccount),
+					((times) | ForEach-Object { ("⌚" + $_) }),
+					($newDotFile ? "new Dotfile!" : $null)
+					(git symbolic-ref --short HEAD),
+					("" + $subName),
+					("" + $subAccount),
 					$fancyJobsList,
 					$gitContext,
 					$pwd.Path,
-						(Nice-Time -then $then)
+					(Nice-Time -then $then)
 				)) | Where-Object {
 				$null -ne $_ -and $false -ne $_
 			} |
