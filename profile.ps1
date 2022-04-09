@@ -146,9 +146,8 @@ $dotFileRefreshService = Start-ThreadJob {
 	if ($diff) {
 		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
-		# $diff | Out-String | Write-Information
 	}
-	Write-Output ($null -ne $diff)
+	$diff
 } -Name "Dotfiles Service"
 
 function mail { 
