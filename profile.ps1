@@ -197,7 +197,6 @@ function Build-Prompt {
 	)
 	$azContext = (Refresh-Job $azContextService)
 	if ($azContext) {
-		# $subName = New-Variable -Option Constant subName $azContext.Subscription.Name
 		$subName = $azContext.Subscription.Name
 		$subAccount = ($azContext.Account.Id)
 	}
@@ -207,7 +206,8 @@ function Build-Prompt {
 			(
 				@(
 					((times) | ForEach-Object { ("⌚" + $_) }),
-					($newDotFile ? "new Dotfile!" : $null) (git symbolic-ref --short HEAD),
+					($newDotFile ? "new Dotfile!" : $null),
+					(git symbolic-ref --short HEAD),
 					("" + $subName),
 					("" + $subAccount),
 					$fancyJobsList,
