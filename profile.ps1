@@ -31,32 +31,6 @@ function Update-Dotfiles {
 	Invoke-WebRequest $source -OutFile $profile
 	. $PROFILE
 }
-function Get-Dotfiles {
-	param(
-		$source = $source,
-		$profilePath = $PROFILE
-	)
-	$content = (Invoke-WebRequest $source).Content
-	if ((Test-Path $profilePath)) { 
-		$profileContent = (Get-Content $profilePath)
-		# Remove-Item -Force $profilePath
-	}
-	else { 
-		$profilePath = ""
-	}
-
-	Write-Information ("ProfilePath:" + $profilePath)
-	Write-Information $content
-	Write-Information $profileContent
-           
-	Set-Content -Path $profilePath -Value $content -Force
-	$diff = (Compare-Object $profileContent $content)
-	if ($diff) {
-		Write-Information "diff detected."
-		$diff | Out-String | Write-Information
-	}
-	Write-Output ($null -ne $diff)
-}
 function touch { 
 	param(
 		$file
@@ -142,7 +116,6 @@ $azContextService = Start-ThreadJob {
 } -Name "Azure Context Service"
 
 $dotFileRefreshService = Start-ThreadJob {
-	# & ${using:function:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
 	$profilePath = $using:PROFILE
 	$source = $using:source
 
@@ -159,13 +132,13 @@ $dotFileRefreshService = Start-ThreadJob {
 	Write-Information $profileContent
            
 	$diff = (Compare-Object $profileContent $content)
+	Set-Content -Path $profilePath -Value $content -Force
 	if ($diff) {
 		Remove-Item -Path $profilePath
-		Set-Content -Path $profilePath -Value $content -Force
 		Write-Information "diff detected."
 		Write-Information ($diff | Out-String)
 	}
-	($null -eq $diff)
+	($null -ne $diff)
 } -Name "Dotfiles Service"
 
 function mail { 
