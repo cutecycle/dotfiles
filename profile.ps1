@@ -261,11 +261,11 @@ function promptList {
 	) 
 }
 function Build-Prompt { 
-	promptList
+	(promptList
 	| trim
 	| trunc 
 	| fancyNull 
-	| Join-String -Separator " / " -OutputSuffix "> "
+	| Join-String -Separator " / " -OutputSuffix "> ")
 }
 function prompt {
 	try { 
@@ -275,4 +275,4 @@ function prompt {
 		( "❌" + $_.Exception.Message + "> ")
 	} 
 }
-(Get-Dotfiles | Out-Null) & 
+# (Get-Dotfiles | Out-Null)
