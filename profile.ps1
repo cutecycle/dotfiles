@@ -6,7 +6,11 @@ function g {
 	git commit -m "wip"
 	git push
 }
-
+$lights = 1
+function lights { 
+	$lights = [Int32](-not $lights)
+	Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $lights
+}
 # Set-PoshPrompt -theme M365Princess
 function Get-Dotfiles {
 	param(
