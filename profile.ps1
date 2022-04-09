@@ -152,7 +152,6 @@ function wl {
 
 function trunc { 
 	[string[]] $args[0] | ForEach-Object { 
-		$max = $_.length
 		$intended = 15
 		$short = ($_.Length -lt $intended)
 		$_.Substring(
@@ -167,7 +166,7 @@ function trunc {
 }
 function Test-Perf { 
 	Measure-Command { 
-	(22 / 7) | Set-COntent -path (New-TemporaryFile)
+		(22 / 7) | Set-COntent -path (New-TemporaryFile)
 	}
 }
 function Test-Hours { 
