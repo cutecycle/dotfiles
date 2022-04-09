@@ -177,14 +177,15 @@ function trunc {
 	[string[]] $args[0] | ForEach-Object { 
 		$max = $_.length
 		$intended = 15
+		$short = ($_.Length -lt $intended)
 		$_.Substring(
 			0,
 			(
 				#dammit i know there's something better than this out there
-				$_.Length -lt $intended ? $_.Length : ($intended + "…")
+				$short ? $_.Length : ($intended)
 			)
 
-		)
+		) + ($short ? "" :  "…" )
 	}
 }
 function times { 
