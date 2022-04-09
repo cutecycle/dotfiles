@@ -165,7 +165,7 @@ function i {
 function Build-Prompt { 
 	$azContext = (Refresh-Job $azContextService)
 	if ($azContext) {
-		$subName = $azContext.Subscription.Name
+		$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
 		$subAccount = ($azContext.Account.Id)
 	}
 	# $newDotFile = (Refresh-Job $dotFileRefreshService)
@@ -192,3 +192,4 @@ function Build-Prompt {
 function prompt {
 	Build-Prompt
 }
+
