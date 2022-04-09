@@ -157,6 +157,7 @@ function mail {
 }
 function fancyNull { 
 	param(
+		[Parameter(ValueFromPipeline = $true)]
 		$obj
 	)
 	($null -eq $obj) ? "?" : $obj
@@ -168,10 +169,11 @@ function trunc {
 		$list
 	)
 	$list | ForEach-Object { 
+		($_.length -gt 10) ? $_ :
 		(
 			$_.Substring(
 				0,
-				5 % $_.length
+				10
 			) + "…"
 		)
 	}
@@ -217,8 +219,12 @@ function AzDetails {
 	}
 }
 function trim { 
-	Where-Object {
-		$null -ne $_ -and $false -ne $_
+	param(
+		[Parameter(ValueFromPipeline = $true)]
+		$list
+	)
+	$list | Where-Object {
+		$null -ne $_
 	}
 }
 
@@ -226,32 +232,40 @@ function gitString {
 	git symbolic-ref --short HEAD
 }
 function dotfileString { 
-	
-	$_ ? "new Dotfile!" : $null
+	param(
+		[Parameter(ValueFromPipeline = $true)]
+		$list
+	)
+	$list ? "new Dotfile!" : $null
 }
 function timeString { 
-	$_ | ForEach-Object { ("⌚" + $_) }
+	param(
+		[Parameter(ValueFromPipeline = $true)]
+		$list
+	)
+	$list | ForEach-Object { 
+			("⌚" + $_) 
+	}
 }
+
 function nicePwd { 
 	$pwd.Path
 }
 function promptList {
 	@(
-		(timeString (times)),
+		(timeString (times))
 		(dotfileString (Refresh-Job $dotFileRefreshService)),
-		(gitString),
+		(gitString)
 		(AzDetails),
 		(nicePwd)
 	) 
 }
 function Build-Prompt { 
-	return (
-		promptList
-		| trim
-		| trunc 
-		| fancyNull 
-		| Join-String -Separator " / " -OutputSuffix "> "
-	)
+	promptList
+	| trim
+	| trunc 
+	| fancyNull 
+	| Join-String -Separator " / " -OutputSuffix "> "
 }
 function prompt {
 	try { 
@@ -261,4 +275,3 @@ function prompt {
 		( "❌" + $_.Exception.Message + "> ")
 	} 
 }
-
