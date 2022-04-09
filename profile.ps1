@@ -36,8 +36,8 @@ function Cache-Command {
 }
 function Get-Dotfiles {
 	param(
-		$source,
-		$profilePath
+		$source=$source,
+		$profilePath=$PROFILE
 	)
 	# Stay unidirectional. only edit in codespaces
     
