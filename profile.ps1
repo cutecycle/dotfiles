@@ -26,6 +26,9 @@ function lights {
 	# Write-Host $msg
 }
 # Set-PoshPrompt -theme M365Princess
+function Update-Dotfiles { 
+	Invoke-WebRequest $source -OutFile $profile
+}
 function Get-Dotfiles {
 	param(
 		$source = $source,
@@ -189,12 +192,13 @@ function trunc {
 	}
 }
 function working { 
-	[DateTime]$args[0].Hour -gt 8 
-	-and 
-	[DateTime]$args[0].Hour -lt 17
-	-and 
-	[DateTime]$args[0].DayOfWeek -notin @("Saturday", "Sunday")
-
+	(
+		[DateTime]$args[0].Hour -gt 8 `
+			-and `
+			[DateTime]$args[0].Hour -lt 17 `
+			-and `
+			[DateTime]$args[0].DayOfWeek -notin @("Saturday", "Sunday") 
+	)
 }
 function times { 
 	$working = (working (Get-Date))
