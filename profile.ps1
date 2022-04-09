@@ -121,12 +121,12 @@ function Refresh-Job {
 	$result
 }
 
-$azContextService = Start-ThreadJob {
-	Get-AzContext
-} -Name "Azure Context Service"
-$dotFileRefreshService = Start-ThreadJob {
-	& ${using:function:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
-} -Name "Dotfiles Service"
+# $azContextService = Start-ThreadJob {
+# 	Get-AzContext
+# } -Name "Azure Context Service"
+# $dotFileRefreshService = Start-ThreadJob {
+# 	& ${using:function:Get-DotFiles} -source $using:source -profilePath $using:PROFILE
+# } -Name "Dotfiles Service"
 
 function mail { 
 	Start-Process "https://outlook.office.com/mail" &
@@ -172,7 +172,7 @@ function Build-Prompt {
 	param(
 		[DateTime]$then
 	)
-	$azContext = (Refresh-Job $azContextService)
+	# $azContext = (Refresh-Job $azContextService)
 	if ($azContext) {
 		$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
 		$subAccount = ($azContext.Account.Id)
