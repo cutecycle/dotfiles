@@ -1,11 +1,5 @@
 # $exceptions = "Teams", "iCUE"
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
-
-$informationPreference="Continue"
-$warningpreference="Continue"
-$debugpreference="Continue"
-
-Write-information $PROFILE
 function g {
 	git pull
 	git add . 
@@ -122,7 +116,7 @@ function Refresh-Job {
 	$result = $job | Receive-job -Keep 
 
 	Write-Information ("Background service $name $($job.State): $result")
-	$job | Remove-Job -Force
+	
 	$job =	Start-ThreadJob -Name $job.Name -ScriptBlock ([scriptblock]::Create($job.Command)) 
 	$result
 }
@@ -176,41 +170,40 @@ function Build-Prompt {
 	param(
 		[DateTime]$then
 	)
-	$azContext = (Refresh-Job $azContextService)
-	if ($azContext) {
-		$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
-		$subAccount = ($azContext.Account.Id)
-	}
-	$newDotFile = (Refresh-Job $dotFileRefreshService)
-	$final = (
-		(
+	try { 
+		$azContext = (Refresh-Job $azContextService)
+		if ($azContext) {
+			$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
+			$subAccount = ($azContext.Account.Id)
+		}
+		# $newDotFile = (Refresh-Job $dotFileRefreshService)
+		$final = (
 			(
-				@(
+				(
+					@(
 						((times) | ForEach-Object { ("⌚" + $_) }),
 						($newDotFile ? "new Dotfile!" : $null)
 						(git symbolic-ref --short HEAD),
 						("" + $subName),
 						("" + $subAccount),
-					$fancyJobsList,
-					$gitContext,
-					$pwd.Path,
+						$fancyJobsList,
+						$gitContext,
+						$pwd.Path,
 						(Nice-Time -then $then)
-				)) | Where-Object {
-				$null -ne $_ -and $false -ne $_
-			} |
-			Foreach-Object {
-				fancyNull $_
-			} | Join-String -Separator " / " -OutputSuffix "> "
-		) 
-	)
-	$final 
-	
-}
-function prompt {
-	try { 
-		Build-Prompt -then (get-date)
+					)) | Where-Object {
+					$null -ne $_ -and $false -ne $_
+				} |
+				Foreach-Object {
+					fancyNull $_
+				} | Join-String -Separator " / " -OutputSuffix "> "
+			) 
+		)
+		$final 
 	}
 	catch { 
 		( $_.Exception.Message + "> ")
-	} 
+	}
 }
+# function prompt {
+# 	Build-Prompt -then (get-date)
+# }
