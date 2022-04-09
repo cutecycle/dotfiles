@@ -199,11 +199,11 @@ function Build-Prompt {
 	)
 	$final 
 }
-function prompt {
-	try { 
-		Build-Prompt -then (get-date)
-	}
-	catch { 
-		( $_.Exception.Message + "> ")
-	} 
-}
+# function prompt {
+# 	try { 
+# 		Build-Prompt -then (get-date)
+# 	}
+# 	catch { 
+# 		( $_.Exception.Message + "> ")
+# 	} 
+# }
