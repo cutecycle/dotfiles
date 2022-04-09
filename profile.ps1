@@ -200,7 +200,7 @@ function Build-Prompt {
 		$subName = New-Variable -Option Constant subName $azContext.Subscription.Name
 		$subAccount = ($azContext.Account.Id)
 	}
-	# $newDotFile = (Refresh-Job $dotFileRefreshService)
+	$newDotFile = (Refresh-Job $dotFileRefreshService)
 	$final = (
 		(
 			(
