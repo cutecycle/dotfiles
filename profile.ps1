@@ -161,10 +161,14 @@ function fancyNull {
 function times { 
 	$working = ((get-date).Hour -lt 17)
 	$relevantTimes = @(
-		"Eastern Standard Time",
-		$working ? "Pacific Standard Time" : $null,
-		$working ? "UTC" : $null
+		"Eastern Standard Time"
 	)
+	if($working) { 
+		$relevantTimes += @(
+			"Pacific Standard Time",
+		"UTC")
+
+	}
 	$relevantTimes | Foreach-Object {
 		(
 		($_ -creplace "[a-z]", "") -replace " ", "") + " " + `
@@ -214,6 +218,7 @@ function prompt {
 	Build-Prompt
 }
 prompt
+
 
 
 
