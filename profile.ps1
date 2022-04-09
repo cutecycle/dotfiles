@@ -33,9 +33,6 @@ function Cache-Command {
 	}
 	$result
 }
-$azContext = Cache-Command {
-	Get-AzContext
-}
 function Get-Dotfiles {
 	param(
 		$source,
