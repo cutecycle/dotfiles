@@ -1,5 +1,11 @@
 # $exceptions = "Teams", "iCUE"
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
+
+$informationPreference="Continue"
+$warningpreference="Continue"
+$debugpreference="Continue"
+
+Write-information $PROFILE
 function g {
 	git pull
 	git add . 
