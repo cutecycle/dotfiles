@@ -28,7 +28,7 @@ function lights {
 # Set-PoshPrompt -theme M365Princess
 function Update-Dotfiles { 
 	rm $profile
-	$temp = ~/.temp/profile.ps1
+	$temp = "~/.temp/profile.ps1"
 	if(Test-Path $temp) { 
 		rm $temp
 	} else { 
