@@ -32,7 +32,7 @@ function Update-Dotfiles {
 	if(Test-Path $temp) { 
 		rm $temp
 	} else { 
-		mkdir $temp
+		mkdir ~/.temp -FOrce
 	}
 	Invoke-WebRequest $source -OutFile $temp
 
