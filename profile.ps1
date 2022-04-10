@@ -76,8 +76,8 @@ function Slice-List {
 		$list,
 		$num
 	)
-	$indices = @(0..($num)) 
-	$size = $list.length / $num
+	$indices = @(0..($num-1)) 
+	$size = [Int32]$list.length / $num
 	$starts = $indices | Foreach-object {
 		$_ * ($size)
 	}
@@ -89,6 +89,7 @@ function Slice-List {
 		ends   = $ends
 	}
 }
+Slice-List @(0..17) 4
 function Count-Instances { 
 	param(
 		$file
@@ -392,7 +393,7 @@ function Posh-Block {
 	]
   }
 "@ | ConvertFrom-Json -depth 100
-	$blockPrototype.segments.properties.command = $command.ToString
+	$blockPrototype.segments.properties.command = $command.ToString()
 	$blockPrototype
 }
 
