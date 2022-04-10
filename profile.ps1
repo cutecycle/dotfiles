@@ -274,12 +274,6 @@ function Build-Prompt {
 	)
 }
 
-function Posh-Setup {
-	$themeBase = ((Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/M365Princess.omp.json").Content | ConvertFrom-Json -Depth 100)
-
-
-	Set-PoshPrompt -Theme $finalString
-}
 
 function Posh-Block {
 	param(
@@ -302,9 +296,20 @@ function Posh-Block {
 	]
   }
 "@ | ConvertFrom-Json -depth 100
-$blockPrototype.segments.command = $command
-	
+	$blockPrototype.segments.command = $command
+	$blockPrototype
 }
+
+function Posh-Setup {
+	$themeBase = ((Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/M365Princess.omp.json").Content | ConvertFrom-Json -Depth 100)
+	$test = Posh-Block -command {
+		(AzDetails)
+	}
+	$themeBase.blocks.segments += $test
+
+	Set-PoshPrompt -Theme $finalString
+}
+
 
 function Ensure { 
 	param(
@@ -316,11 +321,11 @@ function Ensure {
 	}
 }
 
-function prompt {
-	try { 
-		Build-Prompt
-	}
-	catch { 
-		( "❌" + $_.Exception.Message + "> ")
-	} 
-}
+# function prompt {
+# 	try { 
+# 		Build-Prompt
+# 	}
+# 	catch { 
+# 		( "❌" + $_.Exception.Message + "> ")
+# 	} 
+# }
