@@ -1,9 +1,27 @@
-# $exceptions = "Teams", "iCUE"
+$exceptions = "Teams", "iCUE", "devenv", "mail"	
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
 # look into: why receive-job doesn't unroll
+$setup = New-Module {
+	function Install-Modules { 
+		param(
+			$list
+		)
+		$list | Foreach-object {
+			Start-ThreadJob -Name "Install $_" {
+				Install-Module -Name $using:_ -Scope CurrentUser
+			}
+		}
+	}
+
+	Install-Modules @(
+		"Az",
+		"oh-my-posh"
+	)
+} 
+Import-Module $setup
 function g {
 	Start-ThreadJob {
 		git pull
@@ -12,7 +30,37 @@ function g {
 		git push 
 	} 
 }
-Set-Alias -Name wait -Value "Receive-Job"
+
+
+function Clear-Old { 
+	param(
+		$threshhold = 3,
+		$exceptions = $global:exceptions
+	)
+	get-process | Where-Object { 
+		$_.MainWindowTitle -ne $null
+
+	}
+}
+function Get-Font { 
+	param(
+		$name
+	)
+	[System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+	(New-Object System.Drawing.Text.InstalledFontCollection).Families | where { 
+		$_.Name -eq $name
+	}
+}
+function Install-Font { 
+	param(
+		$name
+	)
+	Start-ThreadJob {
+		& ${using:function:Get-Font}  $using:name 
+		npm i -g google-font-installer
+		gfi install $using:name
+	}
+}
 function lights { 
 	$lights = [Int32](-not $global:lights)
 	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
@@ -315,19 +363,3 @@ function Posh-Setup {
 }
 $poshSetup = Posh-Setup
 
-
-function Ensure-Modules { 
-	param(
-		$list
-	)
-	$list | Foreach-object {
-		Start-ThreadJob -Name "Install $_" {
-			Install-Module -Name $using:_ -Scope CurrentUser
-		}
-	}
-}
-
-Ensure-Modules @(
-	"Az",
-	"oh-my-posh"
-)
