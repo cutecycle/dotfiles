@@ -3,7 +3,7 @@ $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.p
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
-
+# look into: why receive-job doesn't unroll
 function g {
 	Start-ThreadJob {
 		git pull
@@ -12,13 +12,7 @@ function g {
 		git push 
 	} 
 }
-function r { 
-	param(
-		[Parameter(ValueFromPipeline = $true)]
-		$job
-	)
-	Receive-Job $args[0] -Wait
-}
+Set-Alias -Name wait -Value "Receive-Job"
 function lights { 
 	$lights = [Int32](-not $global:lights)
 	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
