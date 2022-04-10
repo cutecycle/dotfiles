@@ -28,7 +28,10 @@ function lights {
 # Set-PoshPrompt -theme M365Princess
 function Update-Dotfiles { 
 	rm $profile
-	Invoke-WebRequest $source -OutFile $profile
+	$temp = ~/.temp/profile.ps1
+	Invoke-WebRequest $source -OutFile $temp
+
+	Copy-Item $temp $PROFILE -Force
 	. $PROFILE
 }
 function touch { 
