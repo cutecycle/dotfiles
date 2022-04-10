@@ -37,10 +37,10 @@ function Clear-Old {
 		$threshhold = 3,
 		$exceptions = $global:exceptions
 	)
-	get-process | Where-Object { 
-		$_.MainWindowTitle -ne $null
-
-	}
+	get-process 
+	| where { $_.MainWindowHandle -ne 0 } 
+	| select MainWindowHandle 
+	| SELECT *
 }
 function Get-Font { 
 	param(
@@ -62,18 +62,20 @@ function Install-Font {
 	}
 }
 function lights { 
-	$lights = [Int32](-not $global:lights)
-	$msg = $lights ? "briNG forth the light" : "bravo six goin dark"
 	@(
 		"AppsUseLightTheme",
 		"SystemUsesLightTheme"
 	) | Foreach-Object { 
 		Start-ThreadJob {
 			$lights = (Get-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_).($using:_)
-			Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_ -Value $using:lights
+			$lights = [Int32](-not $lights)
+			Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_ -Value $lights
+			(Get-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_).($using:_)
+
+			# $msg = [Int32]$lights -eq $true ? "briNG forth the light" : "bravo six goin dark"
+			# Write-Output $msg
 		}
 	}
-	Write-Host $msg
 }
 
 function Update-Dotfiles { 
@@ -363,3 +365,12 @@ function Posh-Setup {
 }
 $poshSetup = Posh-Setup
 
+function prompt { 
+	try { 
+		Build-Prompt
+	}
+ catch { 
+		"$profile failed: $($_.Exception.InvocationInfo.ScriptLineNumber) $($_.Exception.Message)"
+	}
+
+}
