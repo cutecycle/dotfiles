@@ -29,6 +29,9 @@ function lights {
 function Update-Dotfiles { 
 	rm $profile
 	$temp = ~/.temp/profile.ps1
+	if(Test-Path $temp) { 
+		rm $temp
+	} 
 	Invoke-WebRequest $source -OutFile $temp
 
 	Copy-Item $temp $PROFILE -Force
