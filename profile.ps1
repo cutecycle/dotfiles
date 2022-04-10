@@ -1,15 +1,19 @@
 # $exceptions = "Teams", "iCUE"
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
+Set-StrictMode -Version latest
+$WarningPreference = "Continue"
+$global:temp = "~/.temp/profile.ps1"
+
 function g {
-	git pull
-	git add . 
-	git commit -m "wip"
-	git push
+	Start-ThreadJob {
+		git pull
+		git add . 
+		git commit -m "wip"
+		git push 
+	} 
 }
-$lights = 1
-function Test-PerformanceConstraint { 
-
-
+function r { 
+	Receive-Job $args[0] -Wait
 }
 function lights { 
 	$lights = [Int32](-not $global:lights)
@@ -23,10 +27,8 @@ function lights {
 			Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name $using:_ -Value $using:lights
 		}
 	}
-	# Write-Host $msg
+	Write-Host $msg
 }
-# Set-PoshPrompt -theme M365Princess
-$global:temp = "~/.temp/profile.ps1"
 
 function Update-Dotfiles { 
 	$temp = $global:temp
@@ -296,7 +298,7 @@ function Posh-Block {
 	]
   }
 "@ | ConvertFrom-Json -depth 100
-	$blockPrototype.segments.properties.command = $command
+	$blockPrototype.segments.properties.command = $command.ToString
 	$blockPrototype
 }
 
@@ -315,20 +317,19 @@ function Posh-Setup {
 }
 $poshSetup = Posh-Setup
 
-function Ensure { 
+
+function Ensure-Modules { 
 	param(
-		[bool]$that,
-		[scriptblock]$ifNot
+		$list
 	)
-	if (-not $that) {
-		Invoke-Command $ifNot
+	$list | Foreach-object {
+		Start-ThreadJob -Name "Install $_" {
+			Install-Module -Name $using:_ -Scope CurrentUser
+		}
 	}
 }
-# function prompt {
-# 	try { 
-# 		Build-Prompt
-# 	}
-# 	catch { 
-# 		( "❌" + $_.Exception.Message + "> ")
-# 	} 
-# }
+
+Ensure-Modules @(
+	"Az",
+	"oh-my-posh"
+)
