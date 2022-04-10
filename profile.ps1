@@ -275,4 +275,3 @@ function prompt {
 		( "❌" + $_.Exception.Message + "> ")
 	} 
 }
-# (Get-Dotfiles | Out-Null)
