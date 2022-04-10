@@ -296,7 +296,7 @@ function Posh-Block {
 	]
   }
 "@ | ConvertFrom-Json -depth 100
-	$blockPrototype.segments.command = $command
+	$blockPrototype.segments.properties.command = $command
 	$blockPrototype
 }
 
@@ -305,7 +305,9 @@ function Posh-Setup {
 	$test = Posh-Block -command {
 		(AzDetails)
 	}
-	$themeBase.blocks.segments += $test
+	$themeBase.blocks[0].segments += $test
+
+	$finalString = $themeBase | ConvertTo-Json
 
 	Set-PoshPrompt -Theme $finalString
 }
