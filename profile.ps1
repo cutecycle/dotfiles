@@ -13,6 +13,10 @@ function g {
 	} 
 }
 function r { 
+	param(
+		[Parameter(ValueFromPipeline = $true)]
+		$job
+	)
 	Receive-Job $args[0] -Wait
 }
 function lights { 
