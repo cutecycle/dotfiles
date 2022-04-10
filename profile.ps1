@@ -63,8 +63,32 @@ function Install-Font {
 	}
 }
 
+function Vectorize { 
+	param(
+		$list,
+		$optimalThreads = 8
+	)
+	Slice-List $list $optimalThreads
 
-
+}
+function Slice-List { 
+	param(
+		$list,
+		$num
+	)
+	$indices = @(0..($num)) 
+	$size = $list.length / $num
+	$starts = $indices | Foreach-object {
+		$_ * ($size)
+	}
+	$ends = $indices | Foreach-object { 
+		($_ + 1) * $size
+	}
+	@{
+		starts = $starts
+		ends   = $ends
+	}
+}
 function Count-Instances { 
 	param(
 		$file
@@ -72,20 +96,16 @@ function Count-Instances {
 	# this should be able to be any file
 	$string = (Get-Content $file)
 	$tokens = ($string -split "\s")
-	$tokens | ForEach-Object {
-		Start-ThreadJob {
-			$token = $using:_
-			(
-				@{
-					token  = $token
-					count = ($tokens | Where-Object { 
-							$_ -eq $this
-						}).Length
-				}
-			)
+	$tokens | ForEach-Object -Parallel {
+		# $token = $using:_
+		$tokens = $using:tokens
+		@{
+			token = $token
+			count = ($tokens | Where-Object { 
+					$_ -eq $this
+				}).Length
 		}
 	}
-
 }
 function lights { 
 	@(
