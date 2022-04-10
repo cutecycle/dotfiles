@@ -138,7 +138,6 @@ $global:dotFileRefreshService = Start-ThreadJob {
 	Write-Information $profileContent
            
 	$diff = (Compare-Object $profileContent $content)
-	Set-Content -Path $profilePath -Value $content -Force
 	if ($diff) {
 		Write-Information "diff detected."
 		Write-Information ($diff | Out-String)
