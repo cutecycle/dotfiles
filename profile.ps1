@@ -18,7 +18,8 @@ $setup = New-Module {
 
 	Install-Modules @(
 		"Az",
-		"oh-my-posh"
+		"oh-my-posh",
+		"PoshInternals"
 	)
 } 
 Import-Module $setup
@@ -60,6 +61,13 @@ function Install-Font {
 		npm i -g google-font-installer
 		gfi install $using:name
 	}
+}
+
+function Count-Association { 
+	# this should be able to be any file
+	Get-ChildItem $profile
+
+	
 }
 function lights { 
 	@(
