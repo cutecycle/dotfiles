@@ -31,10 +31,12 @@ function Update-Dotfiles {
 	$temp = ~/.temp/profile.ps1
 	if(Test-Path $temp) { 
 		rm $temp
-	} 
+	} else { 
+		mkdir $temp
+	}
 	Invoke-WebRequest $source -OutFile $temp
 
-	Copy-Item $temp $PROFILE -Force
+	Copy-Item -Path $temp -Destination $PROFILE -Force
 	. $PROFILE
 }
 function touch { 
