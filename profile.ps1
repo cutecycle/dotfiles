@@ -273,6 +273,49 @@ function Build-Prompt {
 		| Join-String -Separator " / " -OutputSuffix "> "
 	)
 }
+
+function Posh-Setup {
+	$themeBase = ((Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/M365Princess.omp.json").Content | ConvertFrom-Json -Depth 100)
+
+
+	Set-PoshPrompt -Theme $finalString
+}
+
+function Posh-Block {
+	param(
+		$command
+	)
+	$blockPrototype = @"
+{
+	"type": "prompt",
+	"alignment": "right",
+	"segments": [
+	  {
+		"type": "command",
+		"style": "plain",
+		"foreground": "#ffffff",
+		"properties": {
+		  "shell": "pwsh",
+		  "command": ""
+		}
+	  }
+	]
+  }
+"@ | ConvertFrom-Json -depth 100
+$blockPrototype.segments.command = $command
+	
+}
+
+function Ensure { 
+	param(
+		[bool]$that,
+		[scriptblock]$ifNot
+	)
+	if (-not $that) {
+		Invoke-Command $ifNot
+	}
+}
+
 function prompt {
 	try { 
 		Build-Prompt
