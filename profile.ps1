@@ -63,11 +63,29 @@ function Install-Font {
 	}
 }
 
-function Count-Association { 
-	# this should be able to be any file
-	Get-ChildItem $profile
 
-	
+
+function Count-Instances { 
+	param(
+		$file
+	)
+	# this should be able to be any file
+	$string = (Get-Content $file)
+	$tokens = ($string -split "\s")
+	$tokens | ForEach-Object {
+		Start-ThreadJob {
+			$token = $using:_
+			(
+				@{
+					token  = $token
+					count = ($tokens | Where-Object { 
+							$_ -eq $this
+						}).Length
+				}
+			)
+		}
+	}
+
 }
 function lights { 
 	@(
@@ -372,13 +390,3 @@ function Posh-Setup {
 	$themeBase
 }
 $poshSetup = Posh-Setup
-
-function prompt { 
-	try { 
-		Build-Prompt
-	}
- catch { 
-		"$profile failed: $($_.Exception.InvocationInfo.ScriptLineNumber) $($_.Exception.Message)"
-	}
-
-}
