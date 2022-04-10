@@ -26,18 +26,24 @@ function lights {
 	# Write-Host $msg
 }
 # Set-PoshPrompt -theme M365Princess
+$global:temp = "~/.temp/profile.ps1"
+
 function Update-Dotfiles { 
-	rm $profile
-	$temp = "~/.temp/profile.ps1"
-	if(Test-Path $temp) { 
+	$temp = $global:temp
+	if (Test-Path $temp) { 
 		rm $temp
-	} else { 
+	}
+ else { 
 		mkdir ~/.temp -FOrce
 	}
 	Invoke-WebRequest $source -OutFile $temp
 
 	Copy-Item -Path $temp -Destination $PROFILE -Force
 	. $PROFILE
+}
+function Restore-Dotfiles { 
+	$temp = $global:temp
+	Copy-Item -Path $temp -Destination $PROFILE -Force
 }
 function touch { 
 	param(
