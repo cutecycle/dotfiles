@@ -303,15 +303,17 @@ function Posh-Block {
 function Posh-Setup {
 	$themeBase = ((Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/M365Princess.omp.json").Content | ConvertFrom-Json -Depth 100)
 	$test = Posh-Block -command {
-		(AzDetails)
+		# (AzDetails)
+		"hello"
 	}
 	$themeBase.blocks[0].segments += $test
 
-	$finalString = $themeBase | ConvertTo-Json
+	$finalString = $themeBase | ConvertTo-Json -Depth 100
 
 	Set-PoshPrompt -Theme $finalString
+	$themeBase
 }
-
+$poshSetup = Posh-Setup
 
 function Ensure { 
 	param(
@@ -322,7 +324,6 @@ function Ensure {
 		Invoke-Command $ifNot
 	}
 }
-
 # function prompt {
 # 	try { 
 # 		Build-Prompt
