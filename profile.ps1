@@ -94,72 +94,11 @@ function Slice-List {
 	$result = $ranges | ForEach-Object { 
 		, @($list[($_.start)..($_.end)])
 	}
-	Test-Slicelist $result $list
+
 	$result
 }
-function Test-Slicelist { 
-	param(
-		$result,
-		$originalList
-	)
-	$agg = @()
-	$combine = $result | Foreach-Object { 
-		$_ | Foreach-Object {
-			$agg += $_
-		}
-	}
-	$combine
-	$diff = (Compare-Object $COMBINE $originalList)
-	if ($diff ) {
-		throw ($diff | ConvertTo-Json)
-	}
-}
-@(0..3) | ForEach-Object { 
-	$list = @(0..(Get-Random -Maximum 300))
-	$chunks = (Get-Random -Maximum 300)
-	$result = (Slice-List $list $chunks)
-	# $combine = $result | ForEach-Object { 
-	# 	$_
-	# }
-	# if(Compare-Object $result $combine) {
-	# 	Write-Error "nop: $($list.length) $chunks"
-	# 	Write-Host ((Compare-Object $result $combine) |Convertto-json)
-	# }
-}
 
-# write-host "eh"
-function assert { 
-	param(
-		$a,
-		$b
-	)
-	if ($null -ne (Compare-Object $a $b)) {
-		Write-Error "Expected `n $a `ngot $b"
-		# Get-Variable -scope local
-	}
-}
-function Test-Slice-List {
-	$out = @(1..5) | Foreach-object {
-		$list = @(0..(Get-Random -maximum 300))
-		$result = Slice-List $list $_ 
 
-		$reconstruct = $result | Foreach-object { 
-			@( $_.start .. $_.end)
-		}
-		$diff = Compare-Object $list $reconstruct
-		if ($diff) {
-			Write-Error "Error on List $($list.length) items, $_ chunks:"
-			Write-Host ($result | ConvertTo-Json)
-			$(0..($reconstruct.length)) | foreach { 
-				if ($_ -notin $reconstruct) {
-				}
-
-			}
-		}
-	}
-}
-# clear
-# Test-Slice-List
 function Count-Instances { 
 	param(
 		$file
