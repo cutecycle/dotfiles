@@ -219,7 +219,7 @@ function touch {
 	Write-Output $null  >> $file
 }
 function endit {
-	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -ne "" })
+	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -notin $exceptions })
 	$procs | Foreach-object -Parallel { 
 		Stop-process $_ -ErrorAction "SilentlyContinue"
 	}
