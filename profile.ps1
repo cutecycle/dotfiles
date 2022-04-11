@@ -76,20 +76,90 @@ function Slice-List {
 		$list,
 		$num
 	)
-	$indices = @(0..($num-1)) 
-	$size = [Int32]$list.length / $num
-	$starts = $indices | Foreach-object {
-		$_ * ($size)
+	# I know it can be more elegant than this but I'm getting tired of trying to figure out how
+	# 11 / 9 = 1.2 ; only the first 5 ranges would be correct
+	$num = ((($list.length % $num) -eq $list.length) ? 1 : $num)
+	$size = [Int][Math]::Floor((($list.length) / $num))
+	$ranges = @(0..($num - 1)) | Foreach-Object {
+		$last = ($_ -eq ($num - 1))
+		$start = [Int64]($_ * ($size)) + ($_ -xor 0 )
+		$end = [Int64](($_ + 1) * ($size)) 
+		$end = ($last) ?  ($list.length - 1) : $end
+		@{
+			number = $_
+			start  = $start
+			end    = $end
+		}
 	}
-	$ends = $indices | Foreach-object { 
-		($_ + 1) * $size
+	$result = $ranges | ForEach-Object { 
+		, @($list[($_.start)..($_.end)])
 	}
-	@{
-		starts = $starts
-		ends   = $ends
+	Test-Slicelist $result $list
+	$result
+}
+function Test-Slicelist { 
+	param(
+		$result,
+		$originalList
+	)
+	$agg = @()
+	$combine = $result | Foreach-Object { 
+		$_ | Foreach-Object {
+			$agg += $_
+		}
+	}
+	$combine
+	$diff = (Compare-Object $COMBINE $originalList)
+	if ($diff ) {
+		throw ($diff | ConvertTo-Json)
 	}
 }
-Slice-List @(0..17) 4
+@(0..3) | ForEach-Object { 
+	$list = @(0..(Get-Random -Maximum 300))
+	$chunks = (Get-Random -Maximum 300)
+	$result = (Slice-List $list $chunks)
+	# $combine = $result | ForEach-Object { 
+	# 	$_
+	# }
+	# if(Compare-Object $result $combine) {
+	# 	Write-Error "nop: $($list.length) $chunks"
+	# 	Write-Host ((Compare-Object $result $combine) |Convertto-json)
+	# }
+}
+
+# write-host "eh"
+function assert { 
+	param(
+		$a,
+		$b
+	)
+	if ($null -ne (Compare-Object $a $b)) {
+		Write-Error "Expected `n $a `ngot $b"
+		# Get-Variable -scope local
+	}
+}
+function Test-Slice-List {
+	$out = @(1..5) | Foreach-object {
+		$list = @(0..(Get-Random -maximum 300))
+		$result = Slice-List $list $_ 
+
+		$reconstruct = $result | Foreach-object { 
+			@( $_.start .. $_.end)
+		}
+		$diff = Compare-Object $list $reconstruct
+		if ($diff) {
+			Write-Error "Error on List $($list.length) items, $_ chunks:"
+			Write-Host ($result | ConvertTo-Json)
+			$(0..($reconstruct.length)) | foreach { 
+				if ($_ -notin $reconstruct) {
+				}
+
+			}
+		}
+	}
+}
+# clear
+# Test-Slice-List
 function Count-Instances { 
 	param(
 		$file
@@ -130,7 +200,7 @@ function Update-Dotfiles {
 	if (Test-Path $temp) { 
 		rm $temp
 	}
- else { 
+	else { 
 		mkdir ~/.temp -FOrce
 	}
 	Invoke-WebRequest $source -OutFile $temp
