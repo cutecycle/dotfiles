@@ -4,7 +4,7 @@ Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
 # look into: why receive-job doesn't unroll
-$setup = New-Module {
+# $setup = New-Module { 
 	function Install-Modules { 
 		param(
 			$list
@@ -21,7 +21,7 @@ $setup = New-Module {
 		"oh-my-posh",
 		"PoshInternals"
 	)
-} 
+# } 
 Import-Module $setup
 function g {
 	Start-ThreadJob {
