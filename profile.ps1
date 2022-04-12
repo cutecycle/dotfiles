@@ -94,7 +94,7 @@ function Slice-List {
 	$result = $ranges | ForEach-Object { 
 		, @($list[($_.start)..($_.end)])
 	}
-	Test-Slicelist $result $list
+	# Test-Slicelist $result $list
 	$result
 }
 function Test-Slicelist { 
@@ -114,20 +114,6 @@ function Test-Slicelist {
 		throw ($diff | ConvertTo-Json)
 	}
 }
-@(0..3) | ForEach-Object { 
-	$list = @(0..(Get-Random -Maximum 300))
-	$chunks = (Get-Random -Maximum 300)
-	$result = (Slice-List $list $chunks)
-	# $combine = $result | ForEach-Object { 
-	# 	$_
-	# }
-	# if(Compare-Object $result $combine) {
-	# 	Write-Error "nop: $($list.length) $chunks"
-	# 	Write-Host ((Compare-Object $result $combine) |Convertto-json)
-	# }
-}
-
-# write-host "eh"
 function assert { 
 	param(
 		$a,
@@ -448,12 +434,11 @@ function Posh-Block {
 	)
 	$blockPrototype = @"
 {
-	"type": "prompt",
-	"alignment": "right",
+	"type": "text",
+		"style": "powerline",
 	"segments": [
 	  {
 		"type": "command",
-		"style": "plain",
 		"foreground": "#ffffff",
 		"properties": {
 		  "shell": "pwsh",
@@ -462,22 +447,39 @@ function Posh-Block {
 	  }
 	]
   }
-"@ | ConvertFrom-Json -depth 100
+"@ | ConvertFrom-Json -depth 10
 	$blockPrototype.segments.properties.command = $command.ToString()
+	
 	$blockPrototype
 }
-
-function Posh-Setup {
-	$themeBase = ((Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/M365Princess.omp.json").Content | ConvertFrom-Json -Depth 100)
-	$test = Posh-Block -command {
-		# (AzDetails)
-		"hello"
+function Get-PoshBaseTheme { 
+	((Invoke-WebRequest "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/M365Princess.omp.json").Content | ConvertFrom-Json -Depth 100)
+	
+}
+function MyPosh { 
+	Posh-Block -command {
+		"helloasdifjasoijsadf"
 	}
-	$themeBase.blocks[0].segments += $test
+}
 
-	$finalString = $themeBase | ConvertTo-Json -Depth 100
+function MergePosh { 
+	param(
+		$base,
+		$custom
+	)
+	$base.blocks[0].segments += $custom
+	$base
+}
+function PoshJson { 
+	$args[0] | ConvertTo-Json -Depth 100
+}
+function Posh-Setup {
+	$themeBase = Get-PoshBaseTheme
+	$custom = MyPosh
+	$poshConfig = MergePosh $themeBase $custom
 
-	Set-PoshPrompt -Theme $finalString
+
+	Set-PoshPrompt -Theme (PoshJson $poshConfig)
 	$themeBase
 }
 $poshSetup = Posh-Setup
