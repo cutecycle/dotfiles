@@ -1,28 +1,25 @@
-$exceptions = "Teams", "iCUE", "devenv", "mail"	
+$global:exceptions = @("Teams", "iCUE", "devenv", "mail")
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
-# look into: why receive-job doesn't unroll
-$setup = New-Module {
-	function Install-Modules { 
-		param(
-			$list
-		)
-		$list | Foreach-object {
-			Start-ThreadJob -Name "Install $_" {
-				Install-Module -Name $using:_ -Scope CurrentUser
-			}
+function Install-Modules { 
+	param(
+		$list
+	)
+	$list | Foreach-object {
+		Start-ThreadJob -Name "Install $_" {
+			Get-Module -ListAvailable -Name $_
+			Install-Module -Name $using:_ -Scope CurrentUser
 		}
 	}
+}
 
-	Install-Modules @(
-		"Az",
-		"oh-my-posh",
-		"PoshInternals"
-	)
-} 
-Import-Module $setup
+Install-Modules @(
+	"Az",
+	"oh-my-posh",
+	"PoshInternals"
+)
 function g {
 	Start-ThreadJob {
 		git pull
@@ -40,8 +37,8 @@ function Clear-Old {
 	)
 	get-process 
 	| where { $_.MainWindowHandle -ne 0 } 
-	| select MainWindowHandle 
-	| SELECT *
+	| select Name, MainWindowHandle 
+	| Sort-Object -Property MainWindowHandle
 }
 function Get-Font { 
 	param(
@@ -94,58 +91,10 @@ function Slice-List {
 	$result = $ranges | ForEach-Object { 
 		, @($list[($_.start)..($_.end)])
 	}
-	# Test-Slicelist $result $list
 	$result
 }
-function Test-Slicelist { 
-	param(
-		$result,
-		$originalList
-	)
-	$agg = @()
-	$combine = $result | Foreach-Object { 
-		$_ | Foreach-Object {
-			$agg += $_
-		}
-	}
-	$combine
-	$diff = (Compare-Object $COMBINE $originalList)
-	if ($diff ) {
-		throw ($diff | ConvertTo-Json)
-	}
-}
-function assert { 
-	param(
-		$a,
-		$b
-	)
-	if ($null -ne (Compare-Object $a $b)) {
-		Write-Error "Expected `n $a `ngot $b"
-		# Get-Variable -scope local
-	}
-}
-function Test-Slice-List {
-	$out = @(1..5) | Foreach-object {
-		$list = @(0..(Get-Random -maximum 300))
-		$result = Slice-List $list $_ 
 
-		$reconstruct = $result | Foreach-object { 
-			@( $_.start .. $_.end)
-		}
-		$diff = Compare-Object $list $reconstruct
-		if ($diff) {
-			Write-Error "Error on List $($list.length) items, $_ chunks:"
-			Write-Host ($result | ConvertTo-Json)
-			$(0..($reconstruct.length)) | foreach { 
-				if ($_ -notin $reconstruct) {
-				}
 
-			}
-		}
-	}
-}
-# clear
-# Test-Slice-List
 function Count-Instances { 
 	param(
 		$file
@@ -182,21 +131,13 @@ function lights {
 }
 
 function Update-Dotfiles { 
-	$temp = $global:temp
-	if (Test-Path $temp) { 
-		rm $temp
+	Push-Location $PSScriptRoot
+	try { 
+		git pull 
 	}
-	else { 
-		mkdir ~/.temp -FOrce
+	finally {
+		Pop-Location
 	}
-	Invoke-WebRequest $source -OutFile $temp
-
-	Copy-Item -Path $temp -Destination $PROFILE -Force
-	. $PROFILE
-}
-function Restore-Dotfiles { 
-	$temp = $global:temp
-	Copy-Item -Path $temp -Destination $PROFILE -Force
 }
 function touch { 
 	param(
@@ -205,7 +146,7 @@ function touch {
 	Write-Output $null  >> $file
 }
 function endit {
-	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -notin $exceptions })
+	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
 	$procs | Foreach-object -Parallel { 
 		Stop-process $_ -ErrorAction "SilentlyContinue"
 	}
@@ -474,12 +415,12 @@ function PoshJson {
 	$args[0] | ConvertTo-Json -Depth 100
 }
 function Posh-Setup {
-	$themeBase = Get-PoshBaseTheme
-	$custom = MyPosh
-	$poshConfig = MergePosh $themeBase $custom
-
-
-	Set-PoshPrompt -Theme (PoshJson $poshConfig)
-	$themeBase
+	Start-ThreadJob {
+		$themeBase = Get-PoshBaseTheme
+		$custom = MyPosh
+		$poshConfig = MergePosh $themeBase $custom
+		Set-PoshPrompt -Theme (PoshJson $poshConfig)
+		$themeBase
+	}
 }
-$poshSetup = Posh-Setup
+$poshService = Posh-Setup
