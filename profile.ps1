@@ -3,6 +3,12 @@ $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.p
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
+function type {
+	param(
+		$command
+	)
+	(Get-Command $command).OutputType.type.name | Set-Clipboard
+}
 function Install-Modules { 
 	param(
 		$list
