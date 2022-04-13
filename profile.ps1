@@ -107,13 +107,11 @@ function Count-Words {
 	)
 	# this should be able to be any file
 	$string = (Get-Content $file)
-	$tokens = ($string -split "\s")
-	$tokens | ForEach-Object -Parallel {
-		# $token = $using:_
-		$tokens = $using:tokens
+	$tokens = ($string -split "\s") | where { -not[Char]::IsWhiteSpace($_)}
+	$tokens | ForEach-Object -Parallel -ThrottleLimit 5 {
 		@{
-			token = $token
-			count = ($tokens | Where-Object { 
+			token = $using:_
+			count = ($using:tokens | Where-Object { 
 					$_ -eq $this
 				}).Length
 		}
@@ -153,8 +151,8 @@ function touch {
 }
 function endit {
 	$procs = (Get-Process 
-	| Where-Object { $_.MainWindowTitle -notin $global:exceptions }
-	| Where-Object { $_.MainWindowTitle }
+		| Where-Object { $_.MainWindowTitle -notin $global:exceptions }
+		| Where-Object { $_.MainWindowTitle }
 	)
 	$procs | Foreach-object -Parallel { 
 		Stop-process $_ -ErrorAction "SilentlyContinue"
