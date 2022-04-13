@@ -15,7 +15,7 @@ function Install-Modules {
 	}
 }
 
-Install-Modules @(
+$moduleService = Install-Modules @(
 	"Az",
 	"oh-my-posh",
 	"PoshInternals"
@@ -95,7 +95,7 @@ function Slice-List {
 }
 
 
-function Count-Instances { 
+function Count-Words { 
 	param(
 		$file
 	)
@@ -146,7 +146,10 @@ function touch {
 	Write-Output $null  >> $file
 }
 function endit {
-	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
+	$procs = (Get-Process 
+	| Where-Object { $_.MainWindowTitle -notin $global:exceptions }
+	| Where-Object { $_.MainWindowTitle }
+	)
 	$procs | Foreach-object -Parallel { 
 		Stop-process $_ -ErrorAction "SilentlyContinue"
 	}
@@ -223,29 +226,10 @@ $global:azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
 
-$global:dotFileRefreshService = Start-ThreadJob {
-	$profilePath = $using:PROFILE
-	$source = $using:source
+$poshService = Start-ThreadJob { 
+	Posh-Setup
+} -Name "posh"
 
-	$content = (Invoke-WebRequest $source).Content
-	if ((Test-Path $profilePath)) { 
-		$profileContent = (Get-Content $profilePath)
-	}
-	else { 
-		$profilePath = ""
-	}
-
-	Write-Information ("ProfilePath:" + $profilePath)
-	Write-Information $content
-	Write-Information $profileContent
-           
-	$diff = (Compare-Object $profileContent $content)
-	if ($diff) {
-		Write-Information "diff detected."
-		Write-Information ($diff | Out-String)
-	}
-	($null -ne $diff)
-} -Name "Dotfiles Service"
 
 function mail { 
 	Start-Process "https://outlook.office.com/mail" &
@@ -415,12 +399,15 @@ function PoshJson {
 	$args[0] | ConvertTo-Json -Depth 100
 }
 function Posh-Setup {
-	Start-ThreadJob {
-		$themeBase = Get-PoshBaseTheme
-		$custom = MyPosh
-		$poshConfig = MergePosh $themeBase $custom
-		Set-PoshPrompt -Theme (PoshJson $poshConfig)
+	$poshConfig = Start-ThreadJob {
+		$themeBase = & ${using:function:Get-PoshBaseTheme}
+		$custom = & ${using:function:MyPosh}
+		$poshConfig = & ${using:function:MergePosh} $themeBase $custom
 		$themeBase
 	}
+	$poshConfig
 }
-$poshService = Posh-Setup
+function Posh-Main { 
+	Set-PoshPrompt -Theme (PoshJson (Posh-Setup | Receive-job -Wait))
+}
+Posh-Main
