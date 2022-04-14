@@ -3,6 +3,9 @@ $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.p
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
+function where { 
+Get-ChildItem | ForEach-Object { push-location $_; ($_.Name + " $(git branch --show-current)"); pop-location } 
+}
 function type {
 	param(
 		$command
