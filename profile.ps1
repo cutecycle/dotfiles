@@ -4,11 +4,11 @@ Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
 function gg { 
-	$tokenizedPhrase = ($args[0] -replace "\s+","+")
-$proc = Start-Process "http://www.google.com/search?q=$($tokenizedPhrase)&btnI"
-start-job { 
-	Start-Sleep -seconds 10
-	$using:proc | stop-process
+	$tokenizedPhrase = ($args[0] -replace "\s+", "+")
+	$proc = Start-Process "http://www.google.com/search?q=$($tokenizedPhrase)&btnI"
+	start-job { 
+		Start-Sleep -seconds 10
+		$using:proc | stop-process
 	}
 
 }
@@ -21,6 +21,9 @@ function c {
 }
 
 
+function where { 
+	Get-ChildItem | ForEach-Object { push-location $_; ($_.Name + " $(git branch --show-current)"); pop-location } 
+}
 function type {
 	param(
 		$command
@@ -39,7 +42,7 @@ function Install-Modules {
 	}
 }
 
-Install-Modules @(
+$moduleService = Install-Modules @(
 	"Az",
 	"oh-my-posh",
 	"PoshInternals"
@@ -119,19 +122,17 @@ function Slice-List {
 }
 
 
-function Count-Instances { 
+function Count-Words { 
 	param(
 		$file
 	)
 	# this should be able to be any file
 	$string = (Get-Content $file)
-	$tokens = ($string -split "\s")
-	$tokens | ForEach-Object -Parallel {
-		# $token = $using:_
-		$tokens = $using:tokens
+	$tokens = ($string -split "\s") | where { -not[Char]::IsWhiteSpace($_) }
+	$tokens | ForEach-Object -Parallel -ThrottleLimit 5 {
 		@{
-			token = $token
-			count = ($tokens | Where-Object { 
+			token = $using:_
+			count = ($using:tokens | Where-Object { 
 					$_ -eq $this
 				}).Length
 		}
@@ -170,8 +171,16 @@ function touch {
 	Write-Output $null  >> $file
 }
 function endit {
-	$procs =Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
-	$procs | Foreach-object { 
+	<<<<<<< HEAD
+	$procs = Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
+$procs | Foreach-object { 
+	=======
+	$procs = (Get-Process 
+		| Where-Object { $_.MainWindowTitle -notin $global:exceptions }
+		| Where-Object { $_.MainWindowTitle }
+	)
+	$procs | Foreach-object -Parallel { 
+		>>>>>>> 27dc078549b86071480722ff8919620978195679
 		Stop-process $_ -ErrorAction "SilentlyContinue"
 	}
 } 
@@ -247,29 +256,10 @@ $global:azContextService = Start-ThreadJob {
 	Get-AzContext
 } -Name "Azure Context Service"
 
-$global:dotFileRefreshService = Start-ThreadJob {
-	$profilePath = $using:PROFILE
-	$source = $using:source
+$poshService = Start-ThreadJob { 
+	Posh-Setup
+} -Name "posh"
 
-	$content = (Invoke-WebRequest $source).Content
-	if ((Test-Path $profilePath)) { 
-		$profileContent = (Get-Content $profilePath)
-	}
-	else { 
-		$profilePath = ""
-	}
-
-	Write-Information ("ProfilePath:" + $profilePath)
-	Write-Information $content
-	Write-Information $profileContent
-           
-	$diff = (Compare-Object $profileContent $content)
-	if ($diff) {
-		Write-Information "diff detected."
-		Write-Information ($diff | Out-String)
-	}
-	($null -ne $diff)
-} -Name "Dotfiles Service"
 
 function mail { 
 	Start-Process "https://outlook.office.com/mail" &
@@ -439,12 +429,16 @@ function PoshJson {
 	$args[0] | ConvertTo-Json -Depth 100
 }
 function Posh-Setup {
-	Start-ThreadJob {
-		$themeBase = Get-PoshBaseTheme
-		$custom = MyPosh
-		$poshConfig = MergePosh $themeBase $custom
-		Set-PoshPrompt -Theme (PoshJson $poshConfig)
+	$poshConfig = Start-ThreadJob {
+		$themeBase = & ${using:function:Get-PoshBaseTheme}
+		$custom = & ${using:function:MyPosh}
+		$poshConfig = & ${using:function:MergePosh} $themeBase $custom
 		$themeBase
 	}
+	$poshConfig
 }
-$poshService = Posh-Setup
+function Posh-Main { 
+	Set-PoshPrompt -Theme (PoshJson (Posh-Setup | Receive-job -Wait))
+}
+Posh-Main
+gg
