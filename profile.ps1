@@ -1,4 +1,4 @@
-$global:exceptions = @("Teams", "iCUE", "devenv", "mail", "outlook")
+$global:exceptions = @("Teams", "iCUE", "devenv", "mail", "outlook", "powertoys")
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
