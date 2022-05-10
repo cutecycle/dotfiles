@@ -171,16 +171,10 @@ function touch {
 	Write-Output $null  >> $file
 }
 function endit {
-	<<<<<<< HEAD
-	$procs = Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
-$procs | Foreach-object { 
-	=======
-	$procs = (Get-Process 
-		| Where-Object { $_.MainWindowTitle -notin $global:exceptions }
-		| Where-Object { $_.MainWindowTitle }
-	)
-	$procs | Foreach-object -Parallel { 
-		>>>>>>> 27dc078549b86071480722ff8919620978195679
+	Get-Process 
+	| Where-Object { $_.MainWindowTitle }
+	| Where-Object { $_.MainWindowTitle -notin $global:exceptions }
+	| Foreach-object { 
 		Stop-process $_ -ErrorAction "SilentlyContinue"
 	}
 } 
