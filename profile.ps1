@@ -3,6 +3,7 @@ $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.p
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
+
 function gg { 
 	$tokenizedPhrase = ($args[0] -replace "\s+", "+")
 	$proc = Start-Process "http://www.google.com/search?q=$($tokenizedPhrase)&btnI"
@@ -435,4 +436,3 @@ function Posh-Main {
 	Set-PoshPrompt -Theme (PoshJson (Posh-Setup | Receive-job -Wait))
 }
 Posh-Main
-gg
