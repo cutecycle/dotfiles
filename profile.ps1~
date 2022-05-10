@@ -1,4 +1,4 @@
-$global:exceptions = @("Teams", "iCUE", "devenv", "mail", "outlook")
+$global:exceptions = @("Teams", "iCUE", "devenv", "mail")
 $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.ps1"
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
@@ -12,15 +12,6 @@ start-job {
 	}
 
 }
-
-function c { 
-	param(
-		$path
-	)
-	git clone $env:FAVORITE_REPO $path
-}
-
-
 function type {
 	param(
 		$command
@@ -170,8 +161,8 @@ function touch {
 	Write-Output $null  >> $file
 }
 function endit {
-	$procs =Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
-	$procs | Foreach-object { 
+	$procs = (Get-Process | Where-Object { $_.MainWindowTitle -notin $global:exceptions })
+	$procs | Foreach-object -Parallel { 
 		Stop-process $_ -ErrorAction "SilentlyContinue"
 	}
 } 
