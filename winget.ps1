@@ -14,6 +14,7 @@ winget install "Microsoft.PowerShell" -h
 		"Microsoft.dotnet",
 		"SourceFoundry.HackFonts",
 		"Microsoft.PowerToys",
+		"Microsoft.VisualStudioCode",
 		"Google.Chrome",
 		"Corsair.iCUE",
 		"Git.Git",
@@ -21,6 +22,7 @@ winget install "Microsoft.PowerShell" -h
 		"Microsoft.SQLServer.2019.Express"
 		"Microsoft.SQLServerManagementStudio"
 		"Microsoft.AzureDataStudio"
+		"Microsoft.AzureCLI"
 		"DCSS.DungeonCrawlStoneSoup"
 		"Docker.DockerDesktop"
 		"RedHat.Podman"
@@ -28,6 +30,7 @@ winget install "Microsoft.PowerShell" -h
 		"Parsec.Parsec"
 		"EpicGames.EpicGamesLauncher"
 		"GOG.Galaxy",
+		"Microsoft.WindowsTerminal",
 		"Playnite.Playnite"
 		"GitHub.cli"
 		"Microsoft.dotnet"
@@ -49,28 +52,32 @@ winget install "Microsoft.PowerShell" -h
 		"VideoLAN.VLC"
 		"Google.Drive"
 		"Canonical.Ubuntu"
+		"Kubernetes.minikube"
 		"Python.Python3"
 		"OpenJS.NodeJS"
+		"Microsoft.VisualStudio.2022.Professional"
+		"Microsoft.VisualStudio.2022.Community"
 	)
 
-	$jobs += (Start-ThreadJob {
-			Invoke-Webrequest https://aka.ms/vs/17/release/vs_enterprise.exe -outFile vs_enterprise.exe
-			./vs_enterprise.exe --allWorkloads -q
-		})
 
-	$jobs += (Start-ThreadJob {
-			Invoke-Webrequest https://aka.ms/vs/17/release/vs_community.exe -outFile vs_community.exe
-			./vs_community.exe --allWorkloads -q
-		})
 
 	$jobs += $pkgs | foreach-object {
 		$pkg = $_
 		Start-ThreadJob {
 			$pkg = $using:pkg
+			$installed = (winget list $pkg) -match "Installed"
+			if ($installed) {
+				return
+			}
 			winget list $pkg
 			if (-not($lastexitcode -eq 0)) {
-				winget install -h $pkg
-			}
+				winget install $pkg
+				if(-not($lastexitcode -eq 0)) {
+					Write-Output "Failed to install $pkg"
+				} else {
+					Write-Output "Installed $pkg"
+				}
+			} 
 		}
 	}
 
