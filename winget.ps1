@@ -12,6 +12,7 @@ winget install "Microsoft.PowerShell" -h
 
 	$pkgs = @(
 		"Microsoft.dotnet",
+		"OsirisDevelopment.BatteryBar",
 		"SourceFoundry.HackFonts",
 		"Microsoft.PowerToys",
 		"Microsoft.VisualStudioCode",
