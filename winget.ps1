@@ -12,6 +12,7 @@ winget install "Microsoft.PowerShell" -h
 
 	$pkgs = @(
 		"Microsoft.dotnet",
+		"Canonical.Ubuntu.2204",
 		"OsirisDevelopment.BatteryBar",
 		"SourceFoundry.HackFonts",
 		"Microsoft.PowerToys",
