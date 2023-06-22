@@ -3,6 +3,10 @@ $source = "https://raw.githubusercontent.com/cutecycle/dotfiles/master/profile.p
 Set-StrictMode -Version latest
 $WarningPreference = "Continue"
 $global:temp = "~/.temp/profile.ps1"
+$exists = ((winget list --name JanDeDobbeleer.OhMyPosh) -join "" -match "JanDeDobbeleer.OhMyPosh")
+if(-not $exists) { 
+	winget install JanDeDobbeleer.OhMyPosh -h
+}
 function notify {
     [cmdletbinding()]
     Param (
